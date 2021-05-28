@@ -1,0 +1,16 @@
+{
+  "name": "spotlight3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "node build.js watch",
+    "build": "node build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.12.5",
+    "typescript": "^4.3.2"
+  }
+}
