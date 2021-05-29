@@ -1,7 +1,6 @@
 body {
   width: 300px;
   height: 200px;
-  background: black;
 }
 
 .list {
@@ -14,7 +13,6 @@ body {
 }
 
 .row {
-  color: white;
   position: relative;
   display: block;
   height: 30px;

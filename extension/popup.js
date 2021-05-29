@@ -1,9 +1,7 @@
 (() => {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __getProtoOf = Object.getPrototypeOf;
@@ -21,7 +19,6 @@
       }
     return a;
   };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -36,6 +33,26 @@
   };
   var __toModule = (module) => {
     return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
+  };
+  var __async = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = (value) => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var rejected = (value) => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
   };
 
   // node_modules/object-assign/index.js
@@ -1065,9 +1082,9 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useState(initialState);
           }
-          function useReducer2(reducer2, initialArg, init) {
+          function useReducer(reducer, initialArg, init) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useReducer(reducer2, initialArg, init);
+            return dispatcher.useReducer(reducer, initialArg, init);
           }
           function useRef(initialValue) {
             var dispatcher = resolveDispatcher();
@@ -1085,7 +1102,7 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useCallback(callback, deps);
           }
-          function useMemo2(create, deps) {
+          function useMemo(create, deps) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useMemo(create, deps);
           }
@@ -1646,8 +1663,8 @@
           exports.useEffect = useEffect2;
           exports.useImperativeHandle = useImperativeHandle;
           exports.useLayoutEffect = useLayoutEffect;
-          exports.useMemo = useMemo2;
-          exports.useReducer = useReducer2;
+          exports.useMemo = useMemo;
+          exports.useReducer = useReducer;
           exports.useRef = useRef;
           exports.useState = useState2;
           exports.version = ReactVersion;
@@ -12863,7 +12880,7 @@
           function basicStateReducer(state, action) {
             return typeof action === "function" ? action(state) : action;
           }
-          function mountReducer(reducer2, initialArg, init) {
+          function mountReducer(reducer, initialArg, init) {
             var hook = mountWorkInProgressHook();
             var initialState;
             if (init !== void 0) {
@@ -12875,13 +12892,13 @@
             var queue = hook.queue = {
               pending: null,
               dispatch: null,
-              lastRenderedReducer: reducer2,
+              lastRenderedReducer: reducer,
               lastRenderedState: initialState
             };
             var dispatch = queue.dispatch = dispatchAction.bind(null, currentlyRenderingFiber$1, queue);
             return [hook.memoizedState, dispatch];
           }
-          function updateReducer(reducer2, initialArg, init) {
+          function updateReducer(reducer, initialArg, init) {
             var hook = updateWorkInProgressHook();
             var queue = hook.queue;
             if (!(queue !== null)) {
@@ -12889,7 +12906,7 @@
                 throw Error("Should have a queue. This is likely a bug in React. Please file an issue.");
               }
             }
-            queue.lastRenderedReducer = reducer2;
+            queue.lastRenderedReducer = reducer;
             var current2 = currentHook;
             var baseQueue = current2.baseQueue;
             var pendingQueue = queue.pending;
@@ -12944,11 +12961,11 @@
                     };
                     newBaseQueueLast = newBaseQueueLast.next = _clone;
                   }
-                  if (update.eagerReducer === reducer2) {
+                  if (update.eagerReducer === reducer) {
                     newState = update.eagerState;
                   } else {
                     var action = update.action;
-                    newState = reducer2(newState, action);
+                    newState = reducer(newState, action);
                   }
                 }
                 update = update.next;
@@ -12969,7 +12986,7 @@
             var dispatch = queue.dispatch;
             return [hook.memoizedState, dispatch];
           }
-          function rerenderReducer(reducer2, initialArg, init) {
+          function rerenderReducer(reducer, initialArg, init) {
             var hook = updateWorkInProgressHook();
             var queue = hook.queue;
             if (!(queue !== null)) {
@@ -12977,7 +12994,7 @@
                 throw Error("Should have a queue. This is likely a bug in React. Please file an issue.");
               }
             }
-            queue.lastRenderedReducer = reducer2;
+            queue.lastRenderedReducer = reducer;
             var dispatch = queue.dispatch;
             var lastRenderPhaseUpdate = queue.pending;
             var newState = hook.memoizedState;
@@ -12987,7 +13004,7 @@
               var update = firstRenderPhaseUpdate;
               do {
                 var action = update.action;
-                newState = reducer2(newState, action);
+                newState = reducer(newState, action);
                 update = update.next;
               } while (update !== firstRenderPhaseUpdate);
               if (!objectIs(newState, hook.memoizedState)) {
@@ -13598,13 +13615,13 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 mountHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountReducer(reducer2, initialArg, init);
+                  return mountReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -13692,13 +13709,13 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountReducer(reducer2, initialArg, init);
+                  return mountReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -13786,13 +13803,13 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return updateReducer(reducer2, initialArg, init);
+                  return updateReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -13880,13 +13897,13 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
                 try {
-                  return rerenderReducer(reducer2, initialArg, init);
+                  return rerenderReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -13981,14 +13998,14 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountReducer(reducer2, initialArg, init);
+                  return mountReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -14090,14 +14107,14 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return updateReducer(reducer2, initialArg, init);
+                  return updateReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -14199,14 +14216,14 @@
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
               },
-              useReducer: function(reducer2, initialArg, init) {
+              useReducer: function(reducer, initialArg, init) {
                 currentHookNameInDev = "useReducer";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return rerenderReducer(reducer2, initialArg, init);
+                  return rerenderReducer(reducer, initialArg, init);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -22097,7 +22114,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       exports.reducer = void 0;
       var helpers_1 = require_helpers();
       var typeNarrowing_1 = require_typeNarrowing();
-      var moveIndex2 = function(current, offset, max) {
+      var moveIndex = function(current, offset, max) {
         return max > 0 ? helpers_1.clamp(current + offset, 0, max - 1) : null;
       };
       exports.reducer = function(state, itemCount, action) {
@@ -22110,10 +22127,10 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
             case "HighlightFirstIndex":
               return __assign(__assign({}, state), { highlightedIndex: itemCount > 0 ? 0 : null });
             case "HighlightPreviousIndex": {
-              return __assign(__assign({}, state), { highlightedIndex: state.highlightedIndex != null ? moveIndex2(state.highlightedIndex, -1, itemCount) : 0 });
+              return __assign(__assign({}, state), { highlightedIndex: state.highlightedIndex != null ? moveIndex(state.highlightedIndex, -1, itemCount) : 0 });
             }
             case "HighlightNextIndex": {
-              return __assign(__assign({}, state), { highlightedIndex: state.highlightedIndex != null ? moveIndex2(state.highlightedIndex, 1, itemCount) : 0 });
+              return __assign(__assign({}, state), { highlightedIndex: state.highlightedIndex != null ? moveIndex(state.highlightedIndex, 1, itemCount) : 0 });
             }
             case "HighlightLastIndex":
               return __assign(__assign({}, state), { highlightedIndex: itemCount > 0 ? itemCount - 1 : null });
@@ -22250,13 +22267,13 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       exports.useUnionState = void 0;
       var react_1 = __importDefault(require_react());
       var helpers_1 = require_helpers2();
-      exports.useUnionState = function(initialInternalState, externalState, reducer2, onChange) {
+      exports.useUnionState = function(initialInternalState, externalState, reducer, onChange) {
         var _a = react_1.default.useState(helpers_1.omitKeys(initialInternalState, Object.keys(externalState))), internalState = _a[0], setInternalState = _a[1];
         var internalStateRef = react_1.default.useRef(internalState);
         var dispatch = react_1.default.useCallback(function(actions) {
           var oldState = helpers_1.overrideDefinedPropsOnly(internalStateRef.current, externalState);
           var newState = actions.reduce(function(state, action) {
-            return reducer2(state, action);
+            return reducer(state, action);
           }, __assign({}, oldState));
           var changes = helpers_1.overriddenProps(oldState, newState);
           var newInternalState = helpers_1.omitKeys(newState, Object.keys(externalState));
@@ -22265,7 +22282,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
             setInternalState(internalStateRef.current);
           }
           onChange === null || onChange === void 0 ? void 0 : onChange(changes);
-        }, __spreadArrays(Object.values(externalState), [reducer2, onChange]));
+        }, __spreadArrays(Object.values(externalState), [reducer, onChange]));
         return [internalState, dispatch];
       };
     }
@@ -22317,13 +22334,13 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       var defaultDropdownReducer = function(state, itemCount, action) {
         return reducer_1.reducer(state, itemCount, action);
       };
-      exports.useDropdownState = function(itemCount, externalState, defaultInternalState, onChange, reducer2) {
-        if (reducer2 === void 0) {
-          reducer2 = defaultDropdownReducer;
+      exports.useDropdownState = function(itemCount, externalState, defaultInternalState, onChange, reducer) {
+        if (reducer === void 0) {
+          reducer = defaultDropdownReducer;
         }
         var stateReducer = react_1.default.useCallback(function(state, action) {
-          return reducer2(state, itemCount, action);
-        }, [itemCount, reducer2]);
+          return reducer(state, itemCount, action);
+        }, [itemCount, reducer]);
         var initialInternalState = defaultInternalState ? helpers_1.overrideDefinedPropsOnly(defaultInitialState, defaultInternalState) : defaultInitialState;
         return react_union_state_1.useUnionState(initialInternalState, externalState, stateReducer, onChange);
       };
@@ -23044,51 +23061,15 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   // src/popup/state.ts
   var defaultState = {
     queryText: "",
-    selectedIndex: null
+    selectedIndex: 0
   };
   var getExtensionState = () => new Promise((res) => chrome.storage.sync.get("state", ({ state }) => res(__spreadValues(__spreadValues({}, defaultState), state))));
   var setExtensionState = (state) => chrome.storage.sync.set({ state });
-  var clamp = (value, min, max) => {
-    if (value < min)
-      return min;
-    else if (value > max)
-      return max;
-    else
-      return value;
-  };
-  var moveIndex = (current, offset, max) => max > 0 ? clamp(current + offset, 0, max - 1) : null;
-  var reducer = (state, action) => {
-    switch (action.type) {
-      case "SelectFirstIndex":
-        return __spreadProps(__spreadValues({}, state), {
-          selectedIndex: action.payload.itemCount > 0 ? 0 : null
-        });
-      case "SelectPreviousIndex": {
-        return __spreadProps(__spreadValues({}, state), {
-          selectedIndex: state.selectedIndex != null ? moveIndex(state.selectedIndex, -1, action.payload.itemCount) : 0
-        });
-      }
-      case "SelectNextIndex": {
-        return __spreadProps(__spreadValues({}, state), {
-          selectedIndex: state.selectedIndex != null ? moveIndex(state.selectedIndex, 1, action.payload.itemCount) : 0
-        });
-      }
-      case "SelectLastIndex":
-        return __spreadProps(__spreadValues({}, state), {
-          selectedIndex: action.payload.itemCount > 0 ? action.payload.itemCount - 1 : null
-        });
-      case "SET_QUERY":
-        return __spreadProps(__spreadValues({}, state), {
-          queryText: action.payload.value,
-          selectedIndex: 0
-        });
-      default:
-        return state;
-    }
-  };
 
   // src/popup/app.tsx
   var import_react_dropdown = __toModule(require_lib2());
+
+  // src/popup/searchService.ts
   function flatten(data) {
     const result = [];
     for (const item of data) {
@@ -23099,58 +23080,120 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     return result;
   }
-  var navigateToBookmark = (url) => chrome.tabs.create({ url });
+  var getItems = () => __async(void 0, null, function* () {
+    var _a;
+    const bm = yield (_a = chrome.bookmarks) == null ? void 0 : _a.getTree();
+    const xxx = flatten(bm).filter((i) => !!i.url).map((t) => ({
+      id: t.id,
+      display: t.title,
+      data: t.title.toLocaleLowerCase(),
+      url: t.url
+    })).sort(function(a, b) {
+      return ("" + a.display).localeCompare(b.display);
+    });
+    return {
+      bookmakrs: xxx,
+      tabs: xxx,
+      history: xxx
+    };
+  });
+
+  // src/popup/app.tsx
+  var openTabWithUrl = (url) => chrome.tabs.create({ url });
+  var filterSearchData = (allItems, query) => {
+    const qq = query.toLocaleLowerCase();
+    return {
+      bookmakrs: allItems.bookmakrs.filter((b) => b.data.includes(qq)),
+      tabs: [],
+      history: []
+    };
+  };
+  var flattenData = (searchData) => {
+    const bookmarkTitle = {
+      type: "SECTION",
+      display: "Bookmarks"
+    };
+    const tabsTitle = {
+      type: "SECTION",
+      display: "Tabs"
+    };
+    const bookmarks = searchData.bookmakrs.map((b) => ({
+      type: "BOOKMARK",
+      display: b.display,
+      url: b.url
+    })).slice(0, 5);
+    return [bookmarkTitle, ...bookmarks, tabsTitle, ...bookmarks];
+  };
   function App(props) {
-    const [state, dispatch] = React.useReducer((state2, action) => reducer(state2, action), props.initialState);
-    React.useEffect(() => setExtensionState(state), [state]);
-    const [bookmarks, setBookmarks] = React.useState([]);
-    const { queryText, selectedIndex } = state;
-    const filteredOptions = bookmarks.filter((o) => o.title.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()));
+    const [selectedIndex, setSelectedIndex] = React.useState(props.initialState.selectedIndex);
+    const [queryText, setQueryText] = React.useState(props.initialState.queryText);
+    React.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
+    const [searchData, setSearchData] = React.useState({
+      bookmakrs: [],
+      tabs: [],
+      history: []
+    });
+    const filteredSearchData = filterSearchData(searchData, queryText);
+    const flattenedItems = flattenData(filteredSearchData);
     React.useEffect(() => {
-      var _a;
-      (_a = chrome.bookmarks) == null ? void 0 : _a.getTree().then((bm) => {
-        const xxx = flatten(bm).filter((i) => !!i.url).map((t) => ({
-          id: t.id,
-          title: t.title,
-          url: t.url
-        })).sort(function(a, b) {
-          return ("" + a.title).localeCompare(b.title);
-        });
-        setBookmarks(xxx);
-      });
+      getItems().then((items) => setSearchData(items));
     }, []);
-    const listKeyboardHandler = React.useMemo(() => {
-      const customHandler = (e) => {
-        const payload = { itemCount: filteredOptions.length };
-        switch (e.key) {
-          case "Enter":
-            e.preventDefault();
-            navigateToBookmark(filteredOptions[selectedIndex].url);
-            break;
-          case "Down":
-          case "ArrowDown":
-            e.preventDefault();
-            dispatch({ type: "SelectNextIndex", payload });
-            break;
-          case "Up":
-          case "ArrowUp":
-            e.preventDefault();
-            dispatch({ type: "SelectPreviousIndex", payload });
-            break;
-          case "Home": {
-            dispatch({ type: "SelectFirstIndex", payload });
-            break;
-          }
-          case "End": {
-            dispatch({ type: "SelectLastIndex", payload });
-            break;
-          }
-          default:
-            return;
-        }
+    const listKeyboardHandler = (e) => {
+      const isSection = (index) => {
+        var _a;
+        return ((_a = flattenedItems[index]) == null ? void 0 : _a.type) === "SECTION";
       };
-      return customHandler;
-    }, [selectedIndex, dispatch, filteredOptions]);
+      const clamp = (index) => {
+        if (index > flattenedItems.length - 1) {
+          return flattenedItems.length - 1;
+        }
+        if (index <= 0) {
+          return isSection(0) ? 1 : 0;
+        }
+        return index;
+      };
+      switch (e.key) {
+        case "Enter":
+          e.preventDefault();
+          const item = flattenedItems[selectedIndex];
+          if (item.type !== "SECTION")
+            openTabWithUrl(item.url);
+          break;
+        case "Down":
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((index) => clamp(index + (isSection(index + 1) ? 2 : 1)));
+          break;
+        case "Up":
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((index) => {
+            console.log("checkin", index);
+            if (index === 0) {
+              return index;
+            }
+            if (isSection(index - 1)) {
+              if (index === 1) {
+                return index;
+              } else {
+                return index - 2;
+              }
+            }
+            return index - 1;
+          });
+          break;
+        case "Home": {
+          setSelectedIndex(clamp(0));
+          break;
+        }
+        case "End": {
+          setSelectedIndex(clamp(flattenedItems.length));
+          break;
+        }
+        default:
+          return;
+      }
+    };
     return /* @__PURE__ */ React.createElement("div", {
       className: "dropdown-list",
       onKeyDown: listKeyboardHandler,
@@ -23159,18 +23202,28 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       autoFocus: true,
       onFocus: (e) => e.target.select(),
       value: queryText,
-      onChange: (e) => dispatch({ type: "SET_QUERY", payload: { value: e.target.value } })
-    }), /* @__PURE__ */ React.createElement(import_react_dropdown.VirtualizedList, {
-      itemCount: filteredOptions.length,
+      onChange: (e) => setQueryText(e.target.value)
+    }), selectedIndex, /* @__PURE__ */ React.createElement(import_react_dropdown.VirtualizedList, {
+      itemCount: flattenedItems.length,
       itemHeight: 30,
-      itemRenderer: (i) => /* @__PURE__ */ React.createElement("div", {
-        className: "row",
-        onClick: () => navigateToBookmark(filteredOptions[i].url),
-        style: { color: i === selectedIndex ? "green" : "white" }
-      }, filteredOptions[i].title),
+      itemRenderer: (i) => {
+        const item = flattenedItems[i];
+        if (item.type === "SECTION") {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "row"
+          }, item.display);
+        } else
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "row",
+            onClick: () => openTabWithUrl(item.url),
+            style: {
+              color: i === selectedIndex ? "cornflowerblue" : "black"
+            }
+          }, item.display);
+      },
       highlightedIndex: selectedIndex,
       maxHeight: 300
-    }), /* @__PURE__ */ React.createElement("button", null, "Settings"));
+    }));
   }
 
   // src/popup/index.tsx

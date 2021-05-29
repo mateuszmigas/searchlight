@@ -1,99 +1,129 @@
 import * as React from "react";
-import {
-  ExtensionState,
-  reducer,
-  setExtensionState,
-  ExtensionAction,
-} from "./state";
+import { ExtensionState, setExtensionState } from "./state";
 import { VirtualizedList } from "@mateuszmigas/react-dropdown";
+import {
+  FlattenSearchItem,
+  getItems,
+  SearchResult as SearchData,
+} from "./searchService";
 
-function flatten(
-  data: chrome.bookmarks.BookmarkTreeNode[]
-): chrome.bookmarks.BookmarkTreeNode[] {
-  const result: chrome.bookmarks.BookmarkTreeNode[] = [];
+const openTabWithUrl = (url: string) => chrome.tabs.create({ url });
 
-  for (const item of data) {
-    result.push(item);
+const filterSearchData = (allItems: SearchData, query: string): SearchData => {
+  const qq = query.toLocaleLowerCase();
+  return {
+    bookmakrs: allItems.bookmakrs.filter((b) => b.data.includes(qq)),
+    tabs: [],
+    history: [],
+  };
+};
 
-    if (item.children) {
-      result.push(...flatten(item.children));
-    }
-  }
+const flattenData = (searchData: SearchData): FlattenSearchItem[] => {
+  const bookmarkTitle: FlattenSearchItem = {
+    type: "SECTION",
+    display: "Bookmarks",
+  };
+  const tabsTitle: FlattenSearchItem = {
+    type: "SECTION",
+    display: "Tabs",
+  };
+  const bookmarks = searchData.bookmakrs
+    .map(
+      (b) =>
+        ({
+          type: "BOOKMARK",
+          display: b.display,
+          url: b.url,
+        } as FlattenSearchItem)
+    )
+    .slice(0, 5);
 
-  return result;
-}
-
-const navigateToBookmark = (url: string) => chrome.tabs.create({ url });
+  return [bookmarkTitle, ...bookmarks, tabsTitle, ...bookmarks];
+};
 
 export function App(props: { initialState: ExtensionState }) {
-  const [state, dispatch] = React.useReducer(
-    (state: ExtensionState, action: ExtensionAction) => reducer(state, action),
-    props.initialState
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    props.initialState.selectedIndex
+  );
+  const [queryText, setQueryText] = React.useState(
+    props.initialState.queryText
   );
 
-  React.useEffect(() => setExtensionState(state), [state]);
-
-  const [bookmarks, setBookmarks] = React.useState<
-    { id: string; url: string; title: string }[]
-  >([]);
-
-  const { queryText, selectedIndex } = state;
-  const filteredOptions = bookmarks.filter((o) =>
-    o.title.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+  React.useEffect(
+    () => setExtensionState({ selectedIndex, queryText }),
+    [selectedIndex, queryText]
   );
+
+  const [searchData, setSearchData] = React.useState<SearchData>({
+    bookmakrs: [],
+    tabs: [],
+    history: [],
+  });
+  const filteredSearchData = filterSearchData(searchData, queryText);
+  const flattenedItems = flattenData(filteredSearchData);
 
   React.useEffect(() => {
-    chrome.bookmarks?.getTree().then((bm) => {
-      const xxx = flatten(bm)
-        .filter((i) => !!i.url)
-        .map((t) => ({
-          id: t.id,
-          title: t.title,
-          url: t.url!,
-        }))
-        .sort(function (a, b) {
-          return ("" + a.title).localeCompare(b.title);
-        });
-
-      setBookmarks(xxx);
-    });
+    getItems().then((items) => setSearchData(items));
   }, []);
 
-  // const listKeyboardHandler = useDropdownListKeyboardNavigator(dispatch);
-
-  const listKeyboardHandler = React.useMemo(() => {
-    const customHandler = (e: React.KeyboardEvent<Element>) => {
-      const payload = { itemCount: filteredOptions.length };
-      switch (e.key) {
-        case "Enter":
-          e.preventDefault();
-          navigateToBookmark(filteredOptions[selectedIndex!].url);
-          break;
-        case "Down":
-        case "ArrowDown":
-          e.preventDefault();
-          dispatch({ type: "SelectNextIndex", payload });
-          break;
-        case "Up":
-        case "ArrowUp":
-          e.preventDefault();
-          dispatch({ type: "SelectPreviousIndex", payload });
-          break;
-        case "Home": {
-          dispatch({ type: "SelectFirstIndex", payload });
-          break;
-        }
-        case "End": {
-          dispatch({ type: "SelectLastIndex", payload });
-          break;
-        }
-        default:
-          return;
+  const listKeyboardHandler = (e: React.KeyboardEvent<Element>) => {
+    const isSection = (index: number) =>
+      flattenedItems[index]?.type === "SECTION";
+    const clamp = (index: number) => {
+      if (index > flattenedItems.length - 1) {
+        return flattenedItems.length - 1;
       }
+      if (index <= 0) {
+        return isSection(0) ? 1 : 0;
+      }
+      return index;
     };
 
-    return customHandler;
-  }, [selectedIndex, dispatch, filteredOptions]);
+    switch (e.key) {
+      case "Enter":
+        e.preventDefault();
+        const item = flattenedItems[selectedIndex];
+        if (item.type !== "SECTION") openTabWithUrl(item.url);
+        break;
+      case "Down":
+      case "ArrowDown":
+        e.preventDefault();
+
+        setSelectedIndex((index) =>
+          clamp(index + (isSection(index + 1) ? 2 : 1))
+        );
+
+        break;
+      case "Up":
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((index) => {
+          console.log("checkin", index);
+          if (index === 0) {
+            return index;
+          }
+          if (isSection(index - 1)) {
+            if (index === 1) {
+              return index;
+            } else {
+              return index - 2;
+            }
+          }
+          return index - 1;
+        });
+        break;
+      case "Home": {
+        setSelectedIndex(clamp(0));
+        break;
+      }
+      case "End": {
+        setSelectedIndex(clamp(flattenedItems.length));
+        break;
+      }
+      default:
+        return;
+    }
+  };
 
   return (
     <div className="dropdown-list" onKeyDown={listKeyboardHandler} tabIndex={0}>
@@ -101,26 +131,33 @@ export function App(props: { initialState: ExtensionState }) {
         autoFocus
         onFocus={(e) => e.target.select()}
         value={queryText}
-        onChange={(e) =>
-          dispatch({ type: "SET_QUERY", payload: { value: e.target.value } })
-        }
+        onChange={(e) => setQueryText(e.target.value)}
       ></input>
+      {selectedIndex}
       <VirtualizedList
-        itemCount={filteredOptions.length}
+        itemCount={flattenedItems.length}
         itemHeight={30}
-        itemRenderer={(i) => (
-          <div
-            className="row"
-            onClick={() => navigateToBookmark(filteredOptions[i].url)}
-            style={{ color: i === selectedIndex ? "green" : "white" }}
-          >
-            {filteredOptions[i].title}
-          </div>
-        )}
+        itemRenderer={(i) => {
+          const item = flattenedItems[i];
+
+          if (item.type === "SECTION") {
+            return <div className="row">{item.display}</div>;
+          } else
+            return (
+              <div
+                className="row"
+                onClick={() => openTabWithUrl(item.url)}
+                style={{
+                  color: i === selectedIndex ? "cornflowerblue" : "black",
+                }}
+              >
+                {item.display}
+              </div>
+            );
+        }}
         highlightedIndex={selectedIndex}
         maxHeight={300}
       ></VirtualizedList>
-      <button>Settings</button>
     </div>
   );
 }
