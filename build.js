@@ -1,8 +1,26 @@
 const args = process.argv.slice(2);
+const esbuild = require('esbuild');
 
-require('esbuild').build({
-    entryPoints: ['src/popup/index.tsx'],
+const configs = [
+  {
+    entryPoint: 'src/popup/index.tsx',
+    outfile: 'extension/popup.js'
+  },
+  {
+    entryPoint: 'src/background/index.ts',
+    outfile: 'extension/background.js'
+  },
+  {
+    entryPoint: 'src/options/index.ts',
+    outfile: 'extension/options.js'
+  }
+];
+
+configs.forEach(config => {
+  esbuild.build({
+    entryPoints: [config.entryPoint],
+    outfile: config.outfile,
     bundle: true,
-    outfile: 'extension/popup.js',
-    watch: args.includes('watch')
+    watch: args.includes('watch'),
   }).catch(() => process.exit(1))
+});

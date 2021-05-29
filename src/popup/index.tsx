@@ -1,30 +1,8 @@
 import * as React from "react";
 import { render } from "react-dom";
 import { App } from "./app";
+import { getExtensionState } from "./state";
 
-render(<App />, document.getElementById("app")!);
-
-// Initialize button with user's preferred color
-// let changeColor = document.getElementById("changeColor") as HTMLElement;
-
-// chrome.storage.sync.get("color", ({ color }) => {
-//   changeColor.style.backgroundColor = color;
-// });
-
-// changeColor.addEventListener("click", async () => {
-//   //chrome.tabs.query()
-//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-//   chrome.scripting.executeScript({
-//     target: { tabId: tab.id as number },
-//     function: setPageBackgroundColor,
-//   });
-// });
-
-// // The body of this function will be executed as a content script inside the
-// // current page
-// function setPageBackgroundColor() {
-//   chrome.storage.sync.get("color", ({ color }) => {
-//     document.body.style.backgroundColor = "red";
-//   });
-// }
+getExtensionState().then((state) =>
+  render(<App initialState={state} />, document.getElementById("app")!)
+);
