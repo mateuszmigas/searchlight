@@ -10,12 +10,20 @@ body {
 }
 
 .popup-search-input {
-  background: white;
+  color: white;
+  background: #202124;
   height: 30px;
+  border: 0px;
+  padding: 5px 10px 5px 13px;
+}
+
+input:focus {
+  outline: none;
 }
 
 .popup-search-list {
-  background: #18191b;
+  padding: 0 20px;
+  background: #202124;
 }
 
 .popup-search-list-item {
@@ -24,10 +32,26 @@ body {
   display: block;
   height: 30px;
   line-height: 30px;
-  padding: 0 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-overflow: ellipsis;
+  width: 375px;
+  white-space: nowrap;
   overflow: hidden;
 }
 
+.popup-search-list-item:hover {
+  background-color: #37383a;
+}
+
+.popup-search-list-item-tab {
+  border-left: 3px solid #639fab;
+}
+
+.popup-search-list-item-bookmark {
+  border-left: 3px solid #1c5d99;
+}
+
 .popup-search-list-item-selected {
-  background: #343537;
+  background: #444547;
 }

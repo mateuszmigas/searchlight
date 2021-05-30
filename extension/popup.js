@@ -21098,7 +21098,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       style
     }, /* @__PURE__ */ import_react2.default.createElement("div", {
-      className: `popup-search-list-item ${index === selectedIndex ? "popup-search-list-item-selected" : ""}`,
+      className: `popup-search-list-item ${index === selectedIndex ? "popup-search-list-item-selected" : ""} popup-search-list-item-${searchItem.type === "BOOKMARK" ? "bookmark" : "tab"}`,
       onClick: () => navigateToSearchItem(searchItem)
     }, searchItem.display));
   });

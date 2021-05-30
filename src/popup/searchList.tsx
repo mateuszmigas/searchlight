@@ -35,6 +35,8 @@ const memoizedRow = React.memo(function ListRow(props: {
       <div
         className={`popup-search-list-item ${
           index === selectedIndex ? "popup-search-list-item-selected" : ""
+        } popup-search-list-item-${
+          searchItem.type === "BOOKMARK" ? "bookmark" : "tab"
         }`}
         onClick={() => navigateToSearchItem(searchItem)}
       >
