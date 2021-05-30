@@ -59,26 +59,9 @@ export function App(props: {
           setSelectedIndex(0);
         }}
       ></input>
-      {selectedIndex}
       <SearchList
-        itemCount={filteredSearchItems.length}
-        itemHeight={30}
-        itemRenderer={(i) => {
-          const item = filteredSearchItems[i];
-
-          return (
-            <div
-              className="row"
-              onClick={() => navigateToSearchItem(item)}
-              style={{
-                color: i === selectedIndex ? "cornflowerblue" : "black",
-              }}
-            >
-              {item.display}
-            </div>
-          );
-        }}
-        highlightedIndex={selectedIndex}
+        searchItems={filteredSearchItems}
+        selectedIndex={selectedIndex}
         maxHeight={300}
       ></SearchList>
     </div>

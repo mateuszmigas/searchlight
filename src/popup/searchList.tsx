@@ -1,6 +1,6 @@
 import React from "react";
 import { FixedSizeList } from "react-window";
-import { navigateToSearchItem, SearchItem } from './searchItem';
+import { navigateToSearchItem, SearchItem } from "./searchItem";
 
 const useScrollListToIndex = (
   elementRef: React.RefObject<FixedSizeList>,
@@ -16,64 +16,54 @@ const useScrollListToIndex = (
 
 const memoizedRow = React.memo(function ListRow(props: {
   index: number;
-  style: React.CSSProperties;
   data: {
-    itemRenderer: (index: number) => JSX.Element;
+    searchItems: SearchItem[];
+    selectedIndex: number;
   };
 }) {
   const {
     index,
-    style,
-    data: { itemRenderer },
+    data: { searchItems, selectedIndex },
   } = props;
 
-  return <div style={style}>{itemRenderer(index)}</div>;
+  const searchItem = searchItems[index];
+
+  return (
+    <div
+      className="row"
+      onClick={() => navigateToSearchItem(searchItem)}
+      style={{
+        color: index === selectedIndex ? "cornflowerblue" : "black",
+      }}
+    >
+      {searchItem.display}
+    </div>
+  );
 });
 
-export function SearchListItem(props: { searchItem: SearchItem }) {
-  const { searchItem} = props;
-    return (
-      <div
-        className="row"
-        onClick={() => navigateToSearchItem(searchItem)}
-        style={{
-          color: i === selectedIndex ? "cornflowerblue" : "black",
-        }}
-      >
-        {item.display}
-      </div>
-    );
-  }}
-}
+const itemHeight = 30;
 
 export function SearchList(props: {
-  itemCount: number;
-  itemHeight: number;
+  searchItems: SearchItem[];
+  selectedIndex: number;
   maxHeight: number;
-  itemRenderer: (index: number) => JSX.Element;
-  highlightedIndex: number | null;
-  width?: number | string;
   className?: string;
 }) {
-  const {
-    itemCount,
-    itemHeight,
-    maxHeight,
-    itemRenderer,
-    width = "100%",
-    className,
-  } = props;
+  const { searchItems, selectedIndex, maxHeight, className } = props;
+
+  const itemCount = searchItems.length;
 
   const height = Math.min(itemCount * itemHeight, maxHeight);
   const itemData = React.useMemo(
     () => ({
-      itemRenderer,
+      searchItems,
+      selectedIndex,
     }),
-    [itemRenderer]
+    [searchItems, selectedIndex]
   );
 
   const listRef = React.useRef<FixedSizeList>(null);
-  useScrollListToIndex(listRef, props.highlightedIndex);
+  useScrollListToIndex(listRef, selectedIndex);
 
   return (
     <FixedSizeList
@@ -82,8 +72,11 @@ export function SearchList(props: {
       height={height}
       itemCount={itemCount}
       itemSize={itemHeight}
-      width={width}
-      itemData={itemData}
+      width={"100%"}
+      itemData={{
+        searchItems,
+        selectedIndex,
+      }}
     >
       {memoizedRow}
     </FixedSizeList>

@@ -21090,36 +21090,39 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var memoizedRow = import_react2.default.memo(function ListRow(props) {
     const {
       index,
-      style,
-      data: { itemRenderer }
+      data: { searchItems, selectedIndex }
     } = props;
+    const searchItem = searchItems[index];
     return /* @__PURE__ */ import_react2.default.createElement("div", {
-      style
-    }, itemRenderer(index));
+      className: "row",
+      onClick: () => navigateToSearchItem(searchItem),
+      style: {
+        color: index === selectedIndex ? "cornflowerblue" : "black"
+      }
+    }, searchItem.display);
   });
+  var itemHeight = 30;
   function SearchList(props) {
-    const {
-      itemCount,
-      itemHeight,
-      maxHeight,
-      itemRenderer,
-      width = "100%",
-      className
-    } = props;
+    const { searchItems, selectedIndex, maxHeight, className } = props;
+    const itemCount = searchItems.length;
     const height = Math.min(itemCount * itemHeight, maxHeight);
     const itemData = import_react2.default.useMemo(() => ({
-      itemRenderer
-    }), [itemRenderer]);
+      searchItems,
+      selectedIndex
+    }), [searchItems, selectedIndex]);
     const listRef = import_react2.default.useRef(null);
-    useScrollListToIndex(listRef, props.highlightedIndex);
+    useScrollListToIndex(listRef, selectedIndex);
     return /* @__PURE__ */ import_react2.default.createElement(FixedSizeList, {
       className,
       ref: listRef,
       height,
       itemCount,
       itemSize: itemHeight,
-      width,
-      itemData
+      width: "100%",
+      itemData: {
+        searchItems,
+        selectedIndex
+      }
     }, memoizedRow);
   }
 
@@ -21172,20 +21175,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         setQueryText(e.target.value);
         setSelectedIndex(0);
       }
-    }), selectedIndex, /* @__PURE__ */ React2.createElement(SearchList, {
-      itemCount: filteredSearchItems.length,
-      itemHeight: 30,
-      itemRenderer: (i) => {
-        const item = filteredSearchItems[i];
-        return /* @__PURE__ */ React2.createElement("div", {
-          className: "row",
-          onClick: () => navigateToSearchItem(item),
-          style: {
-            color: i === selectedIndex ? "cornflowerblue" : "black"
-          }
-        }, item.display);
-      },
-      highlightedIndex: selectedIndex,
+    }), /* @__PURE__ */ React2.createElement(SearchList, {
+      searchItems: filteredSearchItems,
+      selectedIndex,
       maxHeight: 300
     }));
   }
