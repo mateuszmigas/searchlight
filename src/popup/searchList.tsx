@@ -1,6 +1,18 @@
 import React from "react";
 import { FixedSizeList } from "react-window";
-import { useScrollListToIndex } from "./useScrollToIndex";
+import { navigateToSearchItem, SearchItem } from './searchItem';
+
+const useScrollListToIndex = (
+  elementRef: React.RefObject<FixedSizeList>,
+  index: number | null
+) => {
+  React.useEffect(() => {
+    if (index !== null && elementRef.current) {
+      const element = elementRef.current;
+      (element as FixedSizeList).scrollToItem(index, "smart");
+    }
+  }, [index]);
+};
 
 const memoizedRow = React.memo(function ListRow(props: {
   index: number;
@@ -18,7 +30,23 @@ const memoizedRow = React.memo(function ListRow(props: {
   return <div style={style}>{itemRenderer(index)}</div>;
 });
 
-export function VirtualizedList(props: {
+export function SearchListItem(props: { searchItem: SearchItem }) {
+  const { searchItem} = props;
+    return (
+      <div
+        className="row"
+        onClick={() => navigateToSearchItem(searchItem)}
+        style={{
+          color: i === selectedIndex ? "cornflowerblue" : "black",
+        }}
+      >
+        {item.display}
+      </div>
+    );
+  }}
+}
+
+export function SearchList(props: {
   itemCount: number;
   itemHeight: number;
   maxHeight: number;

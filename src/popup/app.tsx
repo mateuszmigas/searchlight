@@ -1,85 +1,37 @@
 import * as React from "react";
 import { ExtensionState, setExtensionState } from "./state";
-import {
-  FlattenSearchItem,
-  getItems,
-  SearchResult as SearchData,
-} from "./searchService";
-import { VirtualizedList } from "./virtualizedList";
+import { navigateToSearchItem, SearchItem } from "./searchItem";
+import { SearchList } from "./searchList";
+import { applyQuery } from "./query";
 
-const openTabWithUrl = (item: FlattenSearchItem) =>
-  item.type === "BOOKMARK"
-    ? chrome.tabs.create({ url: item.url })
-    : chrome.tabs.update(Number(item.id), { active: true });
+export function App(props: {
+  initialState: ExtensionState;
+  searchItems: SearchItem[];
+}) {
+  const { initialState, searchItems } = props;
 
-const filterSearchData = (allItems: SearchData, query: string): SearchData => {
-  const qq = query.toLocaleLowerCase();
-  return {
-    bookmakrs: allItems.bookmakrs.filter((b) => b.data.includes(qq)),
-    tabs: allItems.tabs.filter((b) => b.data.includes(qq)),
-    history: [],
-  };
-};
-
-const flattenData = (searchData: SearchData): FlattenSearchItem[] => {
-  const bookmarks = searchData.bookmakrs.map(
-    (b) =>
-      ({
-        id: b.id,
-        type: "BOOKMARK",
-        display: b.display,
-        url: b.url,
-      } as FlattenSearchItem)
-  );
-
-  const tabs = searchData.tabs.map(
-    (b) =>
-      ({
-        id: b.id,
-        type: "TAB",
-        display: b.display,
-        url: b.url,
-      } as FlattenSearchItem)
-  );
-
-  return [...tabs];
-};
-
-export function App(props: { initialState: ExtensionState }) {
   const [selectedIndex, setSelectedIndex] = React.useState(
-    props.initialState.selectedIndex
+    initialState.selectedIndex
   );
-  const [queryText, setQueryText] = React.useState(
-    props.initialState.queryText
-  );
+  const [queryText, setQueryText] = React.useState(initialState.queryText);
 
   React.useEffect(
     () => setExtensionState({ selectedIndex, queryText }),
     [selectedIndex, queryText]
   );
 
-  const [searchData, setSearchData] = React.useState<SearchData>({
-    bookmakrs: [],
-    tabs: [],
-    history: [],
-  });
-  const filteredSearchData = filterSearchData(searchData, queryText);
-  const flattenedItems = flattenData(filteredSearchData);
-
-  React.useEffect(() => {
-    getItems().then((items) => setSearchData(items));
-  }, []);
+  const filteredSearchItems = applyQuery(searchItems, queryText);
 
   const listKeyboardHandler = (e: React.KeyboardEvent<Element>) => {
     const clamp = (index: number) => {
-      return Math.max(Math.min(index, flattenedItems.length - 1), 0);
+      return Math.max(Math.min(index, filteredSearchItems.length - 1), 0);
     };
 
     switch (e.key) {
       case "Enter":
         e.preventDefault();
-        const item = flattenedItems[selectedIndex];
-        openTabWithUrl(item);
+        const item = filteredSearchItems[selectedIndex];
+        navigateToSearchItem(item);
         break;
       case "Down":
       case "ArrowDown":
@@ -102,19 +54,22 @@ export function App(props: { initialState: ExtensionState }) {
         autoFocus
         onFocus={(e) => e.target.select()}
         value={queryText}
-        onChange={(e) => setQueryText(e.target.value)}
+        onChange={(e) => {
+          setQueryText(e.target.value);
+          setSelectedIndex(0);
+        }}
       ></input>
       {selectedIndex}
-      <VirtualizedList
-        itemCount={flattenedItems.length}
+      <SearchList
+        itemCount={filteredSearchItems.length}
         itemHeight={30}
         itemRenderer={(i) => {
-          const item = flattenedItems[i];
+          const item = filteredSearchItems[i];
 
           return (
             <div
               className="row"
-              onClick={() => openTabWithUrl(item)}
+              onClick={() => navigateToSearchItem(item)}
               style={{
                 color: i === selectedIndex ? "cornflowerblue" : "black",
               }}
@@ -125,7 +80,7 @@ export function App(props: { initialState: ExtensionState }) {
         }}
         highlightedIndex={selectedIndex}
         maxHeight={300}
-      ></VirtualizedList>
+      ></SearchList>
     </div>
   );
 }

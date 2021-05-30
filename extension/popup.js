@@ -2474,11 +2474,11 @@
       if (true) {
         (function() {
           "use strict";
-          var React5 = require_react();
+          var React4 = require_react();
           var _assign = require_object_assign();
           var Scheduler = require_scheduler();
           var tracing = require_tracing();
-          var ReactSharedInternals = React5.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          var ReactSharedInternals = React4.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
           function warn(format) {
             {
               for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2510,7 +2510,7 @@
               Function.prototype.apply.call(console[level], console, argsWithFormat);
             }
           }
-          if (!React5) {
+          if (!React4) {
             {
               throw Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.");
             }
@@ -3726,7 +3726,7 @@
           var didWarnInvalidChild = false;
           function flattenChildren(children) {
             var content = "";
-            React5.Children.forEach(children, function(child) {
+            React4.Children.forEach(children, function(child) {
               if (child == null) {
                 return;
               }
@@ -3737,7 +3737,7 @@
           function validateProps2(element, props) {
             {
               if (typeof props.children === "object" && props.children !== null) {
-                React5.Children.forEach(props.children, function(child) {
+                React4.Children.forEach(props.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -10930,7 +10930,7 @@
           }
           var fakeInternalInstance = {};
           var isArray = Array.isArray;
-          var emptyRefsObject = new React5.Component().refs;
+          var emptyRefsObject = new React4.Component().refs;
           var didWarnAboutStateAssignmentForComponent;
           var didWarnAboutUninitializedState;
           var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
@@ -20454,11 +20454,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   });
 
   // src/popup/index.tsx
-  var React4 = __toModule(require_react());
+  var React3 = __toModule(require_react());
   var import_react_dom = __toModule(require_react_dom());
 
   // src/popup/app.tsx
-  var React3 = __toModule(require_react());
+  var React2 = __toModule(require_react());
 
   // src/popup/state.ts
   var defaultState = {
@@ -20468,50 +20468,46 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var getExtensionState = () => new Promise((res) => chrome.storage.sync.get("state", ({ state }) => res(__spreadValues(__spreadValues({}, defaultState), state))));
   var setExtensionState = (state) => chrome.storage.sync.set({ state });
 
-  // src/popup/searchService.ts
-  function flatten(data) {
-    const result = [];
-    for (const item of data) {
-      result.push(item);
-      if (item.children) {
-        result.push(...flatten(item.children));
-      }
-    }
-    return result;
-  }
-  var getItems = () => __async(void 0, null, function* () {
-    var _a;
-    const bm = yield (_a = chrome.bookmarks) == null ? void 0 : _a.getTree();
-    const xxx = flatten(bm).filter((i) => !!i.url).map((t2) => ({
-      id: t2.id,
-      display: t2.title,
-      data: t2.title.toLocaleLowerCase(),
-      url: t2.url
-    })).sort(function(a, b) {
-      return ("" + a.display).localeCompare(b.display);
-    });
-    const t = yield chrome.tabs.query({});
-    const tabs = t.filter((t2) => !!t2.title).map((tt) => {
-      var _a2, _b, _c;
-      return {
-        id: (_b = (_a2 = tt.id) == null ? void 0 : _a2.toString()) != null ? _b : "",
-        display: tt.title,
-        data: (_c = tt.title) == null ? void 0 : _c.toLocaleLowerCase(),
-        url: "test"
-      };
-    }).sort(function(a, b) {
-      return ("" + a.display).localeCompare(b.display);
-    });
-    console.log("tabs", t);
-    return {
-      bookmakrs: xxx,
-      tabs,
-      history: xxx
-    };
+  // src/popup/searchItem.ts
+  var getAllTabs = () => __async(void 0, null, function* () {
+    const tabs = yield chrome.tabs.query({});
+    return tabs.filter((t) => !!t.title && !!t.id).map((t) => ({
+      type: "TAB",
+      id: t.id,
+      display: t.title,
+      data: t.title.toLocaleLowerCase()
+    }));
   });
+  var getAllBookmarks = () => __async(void 0, null, function* () {
+    var _a;
+    const flattenBookmakrs = (data) => {
+      const result = [];
+      for (const item of data) {
+        result.push(item);
+        if (item.children) {
+          result.push(...flattenBookmakrs(item.children));
+        }
+      }
+      return result;
+    };
+    const bookmarks = yield (_a = chrome.bookmarks) == null ? void 0 : _a.getTree();
+    return flattenBookmakrs(bookmarks).filter((b) => !!b.url).map((b) => ({
+      type: "BOOKMARK",
+      id: b.id,
+      display: b.title,
+      data: b.title.toLocaleLowerCase(),
+      url: b.url
+    }));
+  });
+  var getAllSearchItems = () => __async(void 0, null, function* () {
+    const tabs = yield getAllTabs();
+    const bookmarks = yield getAllBookmarks();
+    return tabs.concat(bookmarks).sort((a, b) => a.display.localeCompare(b.display));
+  });
+  var navigateToSearchItem = (item) => item.type === "BOOKMARK" ? chrome.tabs.create({ url: item.url }) : chrome.tabs.update(Number(item.id), { active: true });
 
-  // src/popup/virtualizedList.tsx
-  var import_react3 = __toModule(require_react());
+  // src/popup/searchList.tsx
+  var import_react2 = __toModule(require_react());
 
   // node_modules/@babel/runtime/helpers/esm/extends.js
   function _extends() {
@@ -21082,8 +21078,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
   });
 
-  // src/popup/useScrollToIndex.ts
-  var import_react2 = __toModule(require_react());
+  // src/popup/searchList.tsx
   var useScrollListToIndex = (elementRef, index) => {
     import_react2.default.useEffect(() => {
       if (index !== null && elementRef.current) {
@@ -21092,19 +21087,17 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       }
     }, [index]);
   };
-
-  // src/popup/virtualizedList.tsx
-  var memoizedRow = import_react3.default.memo(function ListRow(props) {
+  var memoizedRow = import_react2.default.memo(function ListRow(props) {
     const {
       index,
       style,
       data: { itemRenderer }
     } = props;
-    return /* @__PURE__ */ import_react3.default.createElement("div", {
+    return /* @__PURE__ */ import_react2.default.createElement("div", {
       style
     }, itemRenderer(index));
   });
-  function VirtualizedList(props) {
+  function SearchList(props) {
     const {
       itemCount,
       itemHeight,
@@ -21114,12 +21107,12 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       className
     } = props;
     const height = Math.min(itemCount * itemHeight, maxHeight);
-    const itemData = import_react3.default.useMemo(() => ({
+    const itemData = import_react2.default.useMemo(() => ({
       itemRenderer
     }), [itemRenderer]);
-    const listRef = import_react3.default.useRef(null);
+    const listRef = import_react2.default.useRef(null);
     useScrollListToIndex(listRef, props.highlightedIndex);
-    return /* @__PURE__ */ import_react3.default.createElement(FixedSizeList, {
+    return /* @__PURE__ */ import_react2.default.createElement(FixedSizeList, {
       className,
       ref: listRef,
       height,
@@ -21130,54 +21123,28 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, memoizedRow);
   }
 
+  // src/popup/query.ts
+  var applyQuery = (items, query) => {
+    const lowerCaseQuery = query.toLocaleLowerCase();
+    return items.filter((i) => i.data.includes(lowerCaseQuery));
+  };
+
   // src/popup/app.tsx
-  var openTabWithUrl = (item) => item.type === "BOOKMARK" ? chrome.tabs.create({ url: item.url }) : chrome.tabs.update(Number(item.id), { active: true });
-  var filterSearchData = (allItems, query) => {
-    const qq = query.toLocaleLowerCase();
-    return {
-      bookmakrs: allItems.bookmakrs.filter((b) => b.data.includes(qq)),
-      tabs: allItems.tabs.filter((b) => b.data.includes(qq)),
-      history: []
-    };
-  };
-  var flattenData = (searchData) => {
-    const bookmarks = searchData.bookmakrs.map((b) => ({
-      id: b.id,
-      type: "BOOKMARK",
-      display: b.display,
-      url: b.url
-    }));
-    const tabs = searchData.tabs.map((b) => ({
-      id: b.id,
-      type: "TAB",
-      display: b.display,
-      url: b.url
-    }));
-    return [...tabs];
-  };
   function App(props) {
-    const [selectedIndex, setSelectedIndex] = React3.useState(props.initialState.selectedIndex);
-    const [queryText, setQueryText] = React3.useState(props.initialState.queryText);
-    React3.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
-    const [searchData, setSearchData] = React3.useState({
-      bookmakrs: [],
-      tabs: [],
-      history: []
-    });
-    const filteredSearchData = filterSearchData(searchData, queryText);
-    const flattenedItems = flattenData(filteredSearchData);
-    React3.useEffect(() => {
-      getItems().then((items) => setSearchData(items));
-    }, []);
+    const { initialState, searchItems } = props;
+    const [selectedIndex, setSelectedIndex] = React2.useState(initialState.selectedIndex);
+    const [queryText, setQueryText] = React2.useState(initialState.queryText);
+    React2.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
+    const filteredSearchItems = applyQuery(searchItems, queryText);
     const listKeyboardHandler = (e) => {
       const clamp = (index) => {
-        return Math.max(Math.min(index, flattenedItems.length - 1), 0);
+        return Math.max(Math.min(index, filteredSearchItems.length - 1), 0);
       };
       switch (e.key) {
         case "Enter":
           e.preventDefault();
-          const item = flattenedItems[selectedIndex];
-          openTabWithUrl(item);
+          const item = filteredSearchItems[selectedIndex];
+          navigateToSearchItem(item);
           break;
         case "Down":
         case "ArrowDown":
@@ -21193,23 +21160,26 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
           return;
       }
     };
-    return /* @__PURE__ */ React3.createElement("div", {
+    return /* @__PURE__ */ React2.createElement("div", {
       className: "dropdown-list",
       onKeyDown: listKeyboardHandler,
       tabIndex: 0
-    }, /* @__PURE__ */ React3.createElement("input", {
+    }, /* @__PURE__ */ React2.createElement("input", {
       autoFocus: true,
       onFocus: (e) => e.target.select(),
       value: queryText,
-      onChange: (e) => setQueryText(e.target.value)
-    }), selectedIndex, /* @__PURE__ */ React3.createElement(VirtualizedList, {
-      itemCount: flattenedItems.length,
+      onChange: (e) => {
+        setQueryText(e.target.value);
+        setSelectedIndex(0);
+      }
+    }), selectedIndex, /* @__PURE__ */ React2.createElement(SearchList, {
+      itemCount: filteredSearchItems.length,
       itemHeight: 30,
       itemRenderer: (i) => {
-        const item = flattenedItems[i];
-        return /* @__PURE__ */ React3.createElement("div", {
+        const item = filteredSearchItems[i];
+        return /* @__PURE__ */ React2.createElement("div", {
           className: "row",
-          onClick: () => openTabWithUrl(item),
+          onClick: () => navigateToSearchItem(item),
           style: {
             color: i === selectedIndex ? "cornflowerblue" : "black"
           }
@@ -21221,9 +21191,17 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
 
   // src/popup/index.tsx
-  getExtensionState().then((state) => (0, import_react_dom.render)(/* @__PURE__ */ React4.createElement(App, {
-    initialState: state
-  }), document.getElementById("app")));
+  var run = () => __async(void 0, null, function* () {
+    const [state, items] = yield Promise.all([
+      getExtensionState(),
+      getAllSearchItems()
+    ]);
+    (0, import_react_dom.render)(/* @__PURE__ */ React3.createElement(App, {
+      initialState: state,
+      searchItems: items
+    }), document.getElementById("app"));
+  });
+  run();
 })();
 /*
 object-assign

@@ -1,4 +1,4 @@
-import { FlattenSearchItem } from "./searchService";
+import { SearchItem } from "./searchItem";
 
 export type ExtensionState = {
   queryText: string;
