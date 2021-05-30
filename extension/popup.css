@@ -23,6 +23,7 @@ input:focus {
 
 .popup-search-list {
   background: #202124;
+  overflow: overlay !important;
 }
 
 .popup-search-no-results {
