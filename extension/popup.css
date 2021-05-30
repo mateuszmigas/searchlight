@@ -14,7 +14,7 @@ body {
   background: #202124;
   height: 30px;
   border: 0px;
-  padding: 5px 10px 5px 13px;
+  padding: 3px 10px 3px 13px;
 }
 
 input:focus {
@@ -23,6 +23,14 @@ input:focus {
 
 .popup-search-list {
   background: #202124;
+}
+
+.popup-search-no-results {
+  background: #202124;
+  line-height: 30px;
+  padding-left: 13px;
+  padding-right: 10px;
+  color: white;
 }
 
 .popup-search-list-item {

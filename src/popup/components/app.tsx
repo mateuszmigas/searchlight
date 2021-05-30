@@ -1,8 +1,9 @@
 import * as React from "react";
-import { ExtensionState, setExtensionState } from "./state";
-import { navigateToSearchItem, SearchItem } from "./searchItem";
+import { ExtensionState, setExtensionState } from "../state";
+import { navigateToSearchItem, SearchItem } from "../searchItem";
 import { SearchList } from "./searchList";
-import { applyQuery } from "./query";
+import { applyQuery } from "../query";
+import { NoResults } from "./noResults";
 
 export function App(props: {
   initialState: ExtensionState;
@@ -67,7 +68,7 @@ export function App(props: {
           selectedIndex={selectedIndex}
         ></SearchList>
       ) : (
-        <div>no items</div>
+        <NoResults></NoResults>
       )}
     </div>
   );

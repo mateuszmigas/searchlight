@@ -1,6 +1,6 @@
 import React from "react";
 import { FixedSizeList } from "react-window";
-import { navigateToSearchItem, SearchItem } from "./searchItem";
+import { navigateToSearchItem, SearchItem } from "../searchItem";
 
 const useScrollListToIndex = (
   elementRef: React.RefObject<FixedSizeList>,

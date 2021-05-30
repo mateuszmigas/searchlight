@@ -532,7 +532,7 @@
             }
             return element;
           };
-          function createElement4(type, config, children) {
+          function createElement5(type, config, children) {
             var propName;
             var props = {};
             var key = null;
@@ -1580,7 +1580,7 @@
                 error("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
               }
             }
-            var element = createElement4.apply(this, arguments);
+            var element = createElement5.apply(this, arguments);
             if (element == null) {
               return element;
             }
@@ -2474,11 +2474,11 @@
       if (true) {
         (function() {
           "use strict";
-          var React4 = require_react();
+          var React5 = require_react();
           var _assign = require_object_assign();
           var Scheduler = require_scheduler();
           var tracing = require_tracing();
-          var ReactSharedInternals = React4.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          var ReactSharedInternals = React5.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
           function warn(format) {
             {
               for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2510,7 +2510,7 @@
               Function.prototype.apply.call(console[level], console, argsWithFormat);
             }
           }
-          if (!React4) {
+          if (!React5) {
             {
               throw Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.");
             }
@@ -3726,7 +3726,7 @@
           var didWarnInvalidChild = false;
           function flattenChildren(children) {
             var content = "";
-            React4.Children.forEach(children, function(child) {
+            React5.Children.forEach(children, function(child) {
               if (child == null) {
                 return;
               }
@@ -3737,7 +3737,7 @@
           function validateProps2(element, props) {
             {
               if (typeof props.children === "object" && props.children !== null) {
-                React4.Children.forEach(props.children, function(child) {
+                React5.Children.forEach(props.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -8491,7 +8491,7 @@
               }
             }
           }
-          function createElement4(type, props, rootContainerElement, parentNamespace) {
+          function createElement5(type, props, rootContainerElement, parentNamespace) {
             var isCustomComponentTag;
             var ownerDocument = getOwnerDocumentFromRootContainer(rootContainerElement);
             var domElement;
@@ -9368,7 +9368,7 @@
               }
               parentNamespace = hostContextDev.namespace;
             }
-            var domElement = createElement4(type, props, rootContainerInstance, parentNamespace);
+            var domElement = createElement5(type, props, rootContainerInstance, parentNamespace);
             precacheFiberNode(internalInstanceHandle, domElement);
             updateFiberProps(domElement, props);
             return domElement;
@@ -10930,7 +10930,7 @@
           }
           var fakeInternalInstance = {};
           var isArray = Array.isArray;
-          var emptyRefsObject = new React4.Component().refs;
+          var emptyRefsObject = new React5.Component().refs;
           var didWarnAboutStateAssignmentForComponent;
           var didWarnAboutUninitializedState;
           var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
@@ -20454,11 +20454,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   });
 
   // src/popup/index.tsx
-  var React3 = __toModule(require_react());
+  var React4 = __toModule(require_react());
   var import_react_dom = __toModule(require_react_dom());
 
-  // src/popup/app.tsx
-  var React2 = __toModule(require_react());
+  // src/popup/components/app.tsx
+  var React3 = __toModule(require_react());
 
   // src/popup/state.ts
   var defaultState = {
@@ -20507,7 +20507,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   });
   var navigateToSearchItem = (item) => item.type === "BOOKMARK" ? chrome.tabs.create({ url: item.url }) : chrome.tabs.update(Number(item.id), { active: true });
 
-  // src/popup/searchList.tsx
+  // src/popup/components/searchList.tsx
   var import_react2 = __toModule(require_react());
 
   // node_modules/@babel/runtime/helpers/esm/extends.js
@@ -21079,7 +21079,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
   });
 
-  // src/popup/searchList.tsx
+  // src/popup/components/searchList.tsx
   var useScrollListToIndex = (elementRef, index) => {
     import_react2.default.useEffect(() => {
       if (index !== null && elementRef.current) {
@@ -21139,12 +21139,20 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
   };
 
-  // src/popup/app.tsx
+  // src/popup/components/noResults.tsx
+  var React2 = __toModule(require_react());
+  function NoResults() {
+    return /* @__PURE__ */ React2.createElement("div", {
+      className: "popup-search-no-results"
+    }, "No results found");
+  }
+
+  // src/popup/components/app.tsx
   function App(props) {
     const { initialState, searchItems } = props;
-    const [selectedIndex, setSelectedIndex] = React2.useState(initialState.selectedIndex);
-    const [queryText, setQueryText] = React2.useState(initialState.queryText);
-    React2.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
+    const [selectedIndex, setSelectedIndex] = React3.useState(initialState.selectedIndex);
+    const [queryText, setQueryText] = React3.useState(initialState.queryText);
+    React3.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
     const filteredSearchItems = applyQuery(searchItems, queryText);
     const listKeyboardHandler = (e) => {
       const clamp = (index) => {
@@ -21170,11 +21178,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
           return;
       }
     };
-    return /* @__PURE__ */ React2.createElement("div", {
+    return /* @__PURE__ */ React3.createElement("div", {
       className: "popup-main",
       onKeyDown: listKeyboardHandler,
       tabIndex: 0
-    }, /* @__PURE__ */ React2.createElement("input", {
+    }, /* @__PURE__ */ React3.createElement("input", {
       className: "popup-search-input",
       autoFocus: true,
       placeholder: "Search tabs and bookmarks",
@@ -21184,10 +21192,10 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         setQueryText(e.target.value);
         setSelectedIndex(0);
       }
-    }), filteredSearchItems.length > 0 ? /* @__PURE__ */ React2.createElement(SearchList, {
+    }), filteredSearchItems.length > 0 ? /* @__PURE__ */ React3.createElement(SearchList, {
       searchItems: filteredSearchItems,
       selectedIndex
-    }) : /* @__PURE__ */ React2.createElement("div", null, "no items"));
+    }) : /* @__PURE__ */ React3.createElement(NoResults, null));
   }
 
   // src/popup/index.tsx
@@ -21196,7 +21204,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       getExtensionState(),
       getAllSearchItems()
     ]);
-    (0, import_react_dom.render)(/* @__PURE__ */ React3.createElement(App, {
+    (0, import_react_dom.render)(/* @__PURE__ */ React4.createElement(App, {
       initialState: state,
       searchItems: items
     }), document.getElementById("app"));
