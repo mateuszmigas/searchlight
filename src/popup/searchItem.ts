@@ -1,6 +1,5 @@
 const getAllTabs = async (): Promise<SearchItem[]> => {
   const tabs = await chrome.tabs.query({});
-  console.log("tabs", tabs);
 
   return tabs
     .filter((t) => !!t.title && !!t.id && !t.active)
