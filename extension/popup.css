@@ -22,7 +22,6 @@ input:focus {
 }
 
 .popup-search-list {
-  padding: 0 20px;
   background: #202124;
 }
 
@@ -35,7 +34,7 @@ input:focus {
   padding-left: 10px;
   padding-right: 10px;
   text-overflow: ellipsis;
-  width: 375px;
+  width: 377px;
   white-space: nowrap;
   overflow: hidden;
 }
