@@ -1,5 +1,3 @@
-import { SearchItem } from "./searchItem";
-
 export type ExtensionState = {
   queryText: string;
   selectedIndex: number;

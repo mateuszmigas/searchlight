@@ -1,23 +1,33 @@
 body {
-  width: 300px;
-  height: 200px;
+  width: 400px;
+  margin: 0px;
 }
 
-.list {
-  position: relative;
-  border: 1px solid #ccc;
-  background: #fff;
-  overflow: auto;
-  height: 300px;
-  -webkit-overflow-scrolling: touch;
+.popup-main {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.row {
+.popup-search-input {
+  background: white;
+  height: 30px;
+}
+
+.popup-search-list {
+  background: #18191b;
+}
+
+.popup-search-list-item {
+  color: white;
   position: relative;
   display: block;
   height: 30px;
   line-height: 30px;
   padding: 0 20px;
-  box-shadow: inset 0 -1px 0 #ddd;
   overflow: hidden;
+}
+
+.popup-search-list-item-selected {
+  background: #343537;
 }

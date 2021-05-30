@@ -20471,7 +20471,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   // src/popup/searchItem.ts
   var getAllTabs = () => __async(void 0, null, function* () {
     const tabs = yield chrome.tabs.query({});
-    return tabs.filter((t) => !!t.title && !!t.id).map((t) => ({
+    console.log("tabs", tabs);
+    return tabs.filter((t) => !!t.title && !!t.id && !t.active).map((t) => ({
       type: "TAB",
       id: t.id,
       display: t.title,
@@ -21097,16 +21098,14 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       style
     }, /* @__PURE__ */ import_react2.default.createElement("div", {
-      className: "row",
-      onClick: () => navigateToSearchItem(searchItem),
-      style: {
-        color: index === selectedIndex ? "cornflowerblue" : "black"
-      }
+      className: `popup-search-list-item ${index === selectedIndex ? "popup-search-list-item-selected" : ""}`,
+      onClick: () => navigateToSearchItem(searchItem)
     }, searchItem.display));
   });
-  var itemHeight = 30;
   function SearchList(props) {
-    const { searchItems, selectedIndex, maxHeight, className } = props;
+    const { searchItems, selectedIndex } = props;
+    const itemHeight = 30;
+    const maxHeight = 300;
     const itemCount = searchItems.length;
     const height = Math.min(itemCount * itemHeight, maxHeight);
     const itemData = import_react2.default.useMemo(() => ({
@@ -21116,7 +21115,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     const listRef = import_react2.default.useRef(null);
     useScrollListToIndex(listRef, selectedIndex);
     return /* @__PURE__ */ import_react2.default.createElement(FixedSizeList, {
-      className,
+      className: "popup-search-list",
       ref: listRef,
       height,
       itemCount,
@@ -21128,8 +21127,16 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/popup/query.ts
   var applyQuery = (items, query) => {
-    const lowerCaseQuery = query.toLocaleLowerCase();
-    return items.filter((i) => i.data.includes(lowerCaseQuery));
+    const lowerCaseQuery = query.toLocaleLowerCase().trim();
+    if (lowerCaseQuery.substring(0, 2) == "b:") {
+      const subQuery = lowerCaseQuery.substring(2).trim();
+      return items.filter((i) => i.type === "BOOKMARK" && i.data.includes(subQuery));
+    } else if (lowerCaseQuery.substring(0, 2) == "t:") {
+      const subQuery = lowerCaseQuery.substring(2).trim();
+      return items.filter((i) => i.type === "TAB" && i.data.includes(subQuery));
+    } else {
+      return items.filter((i) => i.data.includes(lowerCaseQuery));
+    }
   };
 
   // src/popup/app.tsx
@@ -21164,22 +21171,23 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       }
     };
     return /* @__PURE__ */ React2.createElement("div", {
-      className: "dropdown-list",
+      className: "popup-main",
       onKeyDown: listKeyboardHandler,
       tabIndex: 0
     }, /* @__PURE__ */ React2.createElement("input", {
+      className: "popup-search-input",
       autoFocus: true,
+      placeholder: "Search tabs and bookmarks",
       onFocus: (e) => e.target.select(),
       value: queryText,
       onChange: (e) => {
         setQueryText(e.target.value);
         setSelectedIndex(0);
       }
-    }), /* @__PURE__ */ React2.createElement(SearchList, {
+    }), filteredSearchItems.length > 0 ? /* @__PURE__ */ React2.createElement(SearchList, {
       searchItems: filteredSearchItems,
-      selectedIndex,
-      maxHeight: 300
-    }));
+      selectedIndex
+    }) : /* @__PURE__ */ React2.createElement("div", null, "no items"));
   }
 
   // src/popup/index.tsx

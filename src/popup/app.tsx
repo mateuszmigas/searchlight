@@ -49,9 +49,11 @@ export function App(props: {
   };
 
   return (
-    <div className="dropdown-list" onKeyDown={listKeyboardHandler} tabIndex={0}>
+    <div className="popup-main" onKeyDown={listKeyboardHandler} tabIndex={0}>
       <input
+        className="popup-search-input"
         autoFocus
+        placeholder={"Search tabs and bookmarks"}
         onFocus={(e) => e.target.select()}
         value={queryText}
         onChange={(e) => {
@@ -59,11 +61,14 @@ export function App(props: {
           setSelectedIndex(0);
         }}
       ></input>
-      <SearchList
-        searchItems={filteredSearchItems}
-        selectedIndex={selectedIndex}
-        maxHeight={300}
-      ></SearchList>
+      {filteredSearchItems.length > 0 ? (
+        <SearchList
+          searchItems={filteredSearchItems}
+          selectedIndex={selectedIndex}
+        ></SearchList>
+      ) : (
+        <div>no items</div>
+      )}
     </div>
   );
 }

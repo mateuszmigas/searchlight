@@ -1,7 +1,9 @@
 const getAllTabs = async (): Promise<SearchItem[]> => {
   const tabs = await chrome.tabs.query({});
+  console.log("tabs", tabs);
+
   return tabs
-    .filter((t) => !!t.title && !!t.id)
+    .filter((t) => !!t.title && !!t.id && !t.active)
     .map((t) => ({
       type: "TAB",
       id: t.id!,

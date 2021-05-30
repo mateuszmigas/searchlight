@@ -33,11 +33,10 @@ const memoizedRow = React.memo(function ListRow(props: {
   return (
     <div style={style}>
       <div
-        className="row"
+        className={`popup-search-list-item ${
+          index === selectedIndex ? "popup-search-list-item-selected" : ""
+        }`}
         onClick={() => navigateToSearchItem(searchItem)}
-        style={{
-          color: index === selectedIndex ? "cornflowerblue" : "black",
-        }}
       >
         {searchItem.display}
       </div>
@@ -45,18 +44,14 @@ const memoizedRow = React.memo(function ListRow(props: {
   );
 });
 
-const itemHeight = 30;
-
 export function SearchList(props: {
   searchItems: SearchItem[];
   selectedIndex: number;
-  maxHeight: number;
-  className?: string;
 }) {
-  const { searchItems, selectedIndex, maxHeight, className } = props;
-
+  const { searchItems, selectedIndex } = props;
+  const itemHeight = 30;
+  const maxHeight = 300;
   const itemCount = searchItems.length;
-
   const height = Math.min(itemCount * itemHeight, maxHeight);
   const itemData = React.useMemo(
     () => ({
@@ -71,7 +66,7 @@ export function SearchList(props: {
 
   return (
     <FixedSizeList
-      className={className}
+      className="popup-search-list"
       ref={listRef}
       height={height}
       itemCount={itemCount}
