@@ -21090,16 +21090,19 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var memoizedRow = import_react2.default.memo(function ListRow(props) {
     const {
       index,
+      style,
       data: { searchItems, selectedIndex }
     } = props;
     const searchItem = searchItems[index];
     return /* @__PURE__ */ import_react2.default.createElement("div", {
+      style
+    }, /* @__PURE__ */ import_react2.default.createElement("div", {
       className: "row",
       onClick: () => navigateToSearchItem(searchItem),
       style: {
         color: index === selectedIndex ? "cornflowerblue" : "black"
       }
-    }, searchItem.display);
+    }, searchItem.display));
   });
   var itemHeight = 30;
   function SearchList(props) {
@@ -21119,10 +21122,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       itemCount,
       itemSize: itemHeight,
       width: "100%",
-      itemData: {
-        searchItems,
-        selectedIndex
-      }
+      itemData
     }, memoizedRow);
   }
 

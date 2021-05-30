@@ -16,6 +16,7 @@ const useScrollListToIndex = (
 
 const memoizedRow = React.memo(function ListRow(props: {
   index: number;
+  style: React.CSSProperties;
   data: {
     searchItems: SearchItem[];
     selectedIndex: number;
@@ -23,20 +24,23 @@ const memoizedRow = React.memo(function ListRow(props: {
 }) {
   const {
     index,
+    style,
     data: { searchItems, selectedIndex },
   } = props;
 
   const searchItem = searchItems[index];
 
   return (
-    <div
-      className="row"
-      onClick={() => navigateToSearchItem(searchItem)}
-      style={{
-        color: index === selectedIndex ? "cornflowerblue" : "black",
-      }}
-    >
-      {searchItem.display}
+    <div style={style}>
+      <div
+        className="row"
+        onClick={() => navigateToSearchItem(searchItem)}
+        style={{
+          color: index === selectedIndex ? "cornflowerblue" : "black",
+        }}
+      >
+        {searchItem.display}
+      </div>
     </div>
   );
 });
@@ -73,10 +77,7 @@ export function SearchList(props: {
       itemCount={itemCount}
       itemSize={itemHeight}
       width={"100%"}
-      itemData={{
-        searchItems,
-        selectedIndex,
-      }}
+      itemData={itemData}
     >
       {memoizedRow}
     </FixedSizeList>
