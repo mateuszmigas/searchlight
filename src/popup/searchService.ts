@@ -11,16 +11,12 @@ export type SearchResult = {
   history: SearchItem[];
 };
 
-export type FlattenSearchItem =
-  | {
-      type: "BOOKMARK" | "HISTORY" | "TAB";
-      display: string;
-      url: string;
-    }
-  | {
-      type: "SECTION";
-      display: string;
-    };
+export type FlattenSearchItem = {
+  id: string;
+  type: "BOOKMARK" | "HISTORY" | "TAB";
+  display: string;
+  url: string;
+};
 function flatten(
   data: chrome.bookmarks.BookmarkTreeNode[]
 ): chrome.bookmarks.BookmarkTreeNode[] {
@@ -51,9 +47,24 @@ export const getItems = async (): Promise<SearchResult> => {
       return ("" + a.display).localeCompare(b.display);
     });
 
+  const t = await chrome.tabs.query({});
+  const tabs = t
+    .filter((t) => !!t.title)
+    .map((tt) => ({
+      id: tt.id?.toString() ?? "",
+      display: tt.title!,
+      data: tt.title!?.toLocaleLowerCase(),
+      url: "test",
+    }))
+    .sort(function (a, b) {
+      return ("" + a.display).localeCompare(b.display);
+    });
+
+  console.log("tabs", t);
+
   return {
     bookmakrs: xxx,
-    tabs: xxx,
+    tabs: tabs,
     history: xxx,
   };
 };

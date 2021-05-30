@@ -1,44 +1,48 @@
 import * as React from "react";
 import { ExtensionState, setExtensionState } from "./state";
-import { VirtualizedList } from "@mateuszmigas/react-dropdown";
 import {
   FlattenSearchItem,
   getItems,
   SearchResult as SearchData,
 } from "./searchService";
+import { VirtualizedList } from "./virtualizedList";
 
-const openTabWithUrl = (url: string) => chrome.tabs.create({ url });
+const openTabWithUrl = (item: FlattenSearchItem) =>
+  item.type === "BOOKMARK"
+    ? chrome.tabs.create({ url: item.url })
+    : chrome.tabs.update(Number(item.id), { active: true });
 
 const filterSearchData = (allItems: SearchData, query: string): SearchData => {
   const qq = query.toLocaleLowerCase();
   return {
     bookmakrs: allItems.bookmakrs.filter((b) => b.data.includes(qq)),
-    tabs: [],
+    tabs: allItems.tabs.filter((b) => b.data.includes(qq)),
     history: [],
   };
 };
 
 const flattenData = (searchData: SearchData): FlattenSearchItem[] => {
-  const bookmarkTitle: FlattenSearchItem = {
-    type: "SECTION",
-    display: "Bookmarks",
-  };
-  const tabsTitle: FlattenSearchItem = {
-    type: "SECTION",
-    display: "Tabs",
-  };
-  const bookmarks = searchData.bookmakrs
-    .map(
-      (b) =>
-        ({
-          type: "BOOKMARK",
-          display: b.display,
-          url: b.url,
-        } as FlattenSearchItem)
-    )
-    .slice(0, 5);
+  const bookmarks = searchData.bookmakrs.map(
+    (b) =>
+      ({
+        id: b.id,
+        type: "BOOKMARK",
+        display: b.display,
+        url: b.url,
+      } as FlattenSearchItem)
+  );
 
-  return [bookmarkTitle, ...bookmarks, tabsTitle, ...bookmarks];
+  const tabs = searchData.tabs.map(
+    (b) =>
+      ({
+        id: b.id,
+        type: "TAB",
+        display: b.display,
+        url: b.url,
+      } as FlattenSearchItem)
+  );
+
+  return [...tabs];
 };
 
 export function App(props: { initialState: ExtensionState }) {
@@ -67,59 +71,26 @@ export function App(props: { initialState: ExtensionState }) {
   }, []);
 
   const listKeyboardHandler = (e: React.KeyboardEvent<Element>) => {
-    const isSection = (index: number) =>
-      flattenedItems[index]?.type === "SECTION";
     const clamp = (index: number) => {
-      if (index > flattenedItems.length - 1) {
-        return flattenedItems.length - 1;
-      }
-      if (index <= 0) {
-        return isSection(0) ? 1 : 0;
-      }
-      return index;
+      return Math.max(Math.min(index, flattenedItems.length - 1), 0);
     };
 
     switch (e.key) {
       case "Enter":
         e.preventDefault();
         const item = flattenedItems[selectedIndex];
-        if (item.type !== "SECTION") openTabWithUrl(item.url);
+        openTabWithUrl(item);
         break;
       case "Down":
       case "ArrowDown":
         e.preventDefault();
-
-        setSelectedIndex((index) =>
-          clamp(index + (isSection(index + 1) ? 2 : 1))
-        );
-
+        setSelectedIndex((index) => clamp(index + 1));
         break;
       case "Up":
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex((index) => {
-          console.log("checkin", index);
-          if (index === 0) {
-            return index;
-          }
-          if (isSection(index - 1)) {
-            if (index === 1) {
-              return index;
-            } else {
-              return index - 2;
-            }
-          }
-          return index - 1;
-        });
+        setSelectedIndex((index) => clamp(index - 1));
         break;
-      case "Home": {
-        setSelectedIndex(clamp(0));
-        break;
-      }
-      case "End": {
-        setSelectedIndex(clamp(flattenedItems.length));
-        break;
-      }
       default:
         return;
     }
@@ -140,20 +111,17 @@ export function App(props: { initialState: ExtensionState }) {
         itemRenderer={(i) => {
           const item = flattenedItems[i];
 
-          if (item.type === "SECTION") {
-            return <div className="row">{item.display}</div>;
-          } else
-            return (
-              <div
-                className="row"
-                onClick={() => openTabWithUrl(item.url)}
-                style={{
-                  color: i === selectedIndex ? "cornflowerblue" : "black",
-                }}
-              >
-                {item.display}
-              </div>
-            );
+          return (
+            <div
+              className="row"
+              onClick={() => openTabWithUrl(item)}
+              style={{
+                color: i === selectedIndex ? "cornflowerblue" : "black",
+              }}
+            >
+              {item.display}
+            </div>
+          );
         }}
         highlightedIndex={selectedIndex}
         maxHeight={300}
