@@ -9,20 +9,6 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@mateuszmigas/react-dropdown@^0.9.3":
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/@mateuszmigas/react-dropdown/-/react-dropdown-0.9.3.tgz#57afc025493f398581b6620607aa9aa2d8795e58"
-  integrity sha512-yMRFIc56vqszkcfiL9K7CndO5xSi+66R0/8dUfAvR8G8rlEjaiwOZR5eL8i2F0bNJF7/Y7IHHYLEXffcinZ0BA==
-  dependencies:
-    "@mateuszmigas/react-union-state" "^1.0.2"
-    react-window "^1.8.5"
-    react-window-infinite-loader "^1.0.5"
-
-"@mateuszmigas/react-union-state@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@mateuszmigas/react-union-state/-/react-union-state-1.0.2.tgz#72044653e6ed135ad85a1d24ceca369b4c6f3f8d"
-  integrity sha512-6WEdlC1p0KDiT+kfDyHmohwkeMApKcZq/o8h0z8UXu7ofbsgiRK6ilpSJWbC/ghmJOuadNCIsH6UUhu6p+4epQ==
-
 "@types/chrome@^0.0.143":
   version "0.0.143"
   resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.143.tgz#0722fd6c76a73003fa220d869d2dbc8afd581810"
@@ -47,13 +33,6 @@
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/@types/har-format/-/har-format-1.2.5.tgz#4f6648814d0fdcb6a510e3364a9db439a753c4b1"
   integrity sha512-IG8AE1m2pWtPqQ7wXhFhy6Q59bwwnLwO36v5Rit2FrbXCIp8Sk8E2PfUCreyrdo17STwFSKDAkitVuVYbpEHvQ==
-
-"@types/preact-virtual-list@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@types/preact-virtual-list/-/preact-virtual-list-0.3.0.tgz#e4c89e831ce34e1c7920da7c35f5e7f8b3fd2ca7"
-  integrity sha512-Y60xNb0RuC9/Hd+DhQho2Gfwir0YJnPg4pt05d/fZShC2uWZRhynudeldxG/0aAAej/uEtRkdEmG+WGteFyOHA==
-  dependencies:
-    preact "^10.0.0"
 
 "@types/prop-types@*":
   version "15.7.3"
@@ -120,16 +99,6 @@ object-assign@^4.1.1:
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
 
-preact-virtual-list@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/preact-virtual-list/-/preact-virtual-list-0.3.1.tgz#90977c1d81cebe10b38817c103a8fb3fc8279297"
-  integrity sha1-kJd8HYHOvhCziBfBA6j7P8gnkpc=
-
-preact@^10.0.0, preact@^10.5.13:
-  version "10.5.13"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.5.13.tgz#85f6c9197ecd736ce8e3bec044d08fd1330fa019"
-  integrity sha512-q/vlKIGNwzTLu+jCcvywgGrt+H/1P/oIRSD6mV4ln3hmlC+Aa34C7yfPI4+5bzW8pONyVXYS7SvXosy2dKKtWQ==
-
 react-dom@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
@@ -139,12 +108,7 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
-react-window-infinite-loader@^1.0.5:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/react-window-infinite-loader/-/react-window-infinite-loader-1.0.7.tgz#958ef1a689d20dce122ef377583acd987760aee8"
-  integrity sha512-wg3LWkUpG21lhv+cZvNy+p0+vtclZw+9nP2vO6T9PKT50EN1cUq37Dq6FzcM38h/c2domE0gsUhb6jHXtGogAA==
-
-react-window@^1.8.5, react-window@^1.8.6:
+react-window@^1.8.6:
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.6.tgz#d011950ac643a994118632665aad0c6382e2a112"
   integrity sha512-8VwEEYyjz6DCnGBsd+MgkD0KJ2/OXFULyDtorIiTz+QzwoP94tBoA7CnbtyXMm+cCeAUER5KJcPtWl9cpKbOBg==

@@ -1,2 +1,0 @@
-1. exclude active tab
-2. activate tab on another desktop

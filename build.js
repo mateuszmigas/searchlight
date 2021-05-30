@@ -22,5 +22,6 @@ configs.forEach(config => {
     outfile: config.outfile,
     bundle: true,
     watch: args.includes('watch'),
+    minify: args.includes('prod')
   }).catch(() => process.exit(1))
 });
