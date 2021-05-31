@@ -1,12 +1,29 @@
+:root {
+  --background: #202124;
+  --background-hover: #37383a;
+  --background-selected: #444547;
+  --border-tab: #284b63;
+  --border-bookmark: #3c6e71;
+  --border-width: 3px;
+  --foreground-white: #ffffff;
+  --foreground-creamy: #d9d9d9;
+  --font-size: 14px;
+  --popup-width: 400px;
+  --item-width: 377px;
+  --item-height: 30px;
+  --padding: 10px;
+  --padding-with-border: 13px;
+}
+
 body {
-  width: 400px;
+  width: var(--popup-width);
   margin: 0px;
-  background: #202124;
-  font-size: 14px;
+  background: var(--background);
+  font-size: var(--font-size);
 }
 
 b {
-  color: white;
+  color: var(--foreground-white);
 }
 
 .popup-main {
@@ -16,56 +33,51 @@ b {
 }
 
 .popup-search-input {
-  color: #d9d9d9;
-  background: #202124;
-  height: 30px;
+  font-size: var(--font-size);
+  color: var(--foreground-creamy);
+  background: var(--background);
+  height: var(--item-height);
   border: 0px;
-  padding: 3px 10px 3px 13px;
+  padding: var(--border-width) var(--padding-with-border) var(--border-width)
+    var(--padding-with-border);
 }
 
 input:focus {
   outline: none;
 }
 
-.popup-search-list {
-  background: #202124;
-}
-
 .popup-search-no-results {
-  background: #202124;
-  line-height: 30px;
-  padding-left: 13px;
-  padding-right: 10px;
-  color: white;
+  line-height: var(--item-height);
+  padding-left: var(--padding-with-border);
+  padding-right: var(--padding-with-border);
+  color: var(--foreground-creamy);
 }
 
 .popup-search-list-item {
-  font-size: 14px;
-  color: #d9d9d9;
-  position: relative;
-  display: block;
-  height: 30px;
-  line-height: 30px;
-  padding-left: 10px;
-  padding-right: 10px;
+  font-size: var(--font-size);
+  color: var(--foreground-creamy);
+  height: var(--item-height);
+  width: var(--item-width);
+  line-height: var(--item-height);
+  padding-left: var(--padding);
+  padding-right: var(--padding);
   text-overflow: ellipsis;
-  width: 377px;
   white-space: nowrap;
   overflow: hidden;
 }
 
 .popup-search-list-item:hover {
-  background-color: #37383a;
+  background: var(--background-hover);
 }
 
 .popup-search-list-item-tab {
-  border-left: 3px solid #284b63;
+  border-left: var(--border-width) solid var(--border-tab);
 }
 
 .popup-search-list-item-bookmark {
-  border-left: 3px solid #3c6e71;
+  border-left: var(--border-width) solid var(--border-bookmark);
 }
 
 .popup-search-list-item-selected {
-  background: #444547;
+  background: var(--background-selected);
 }
