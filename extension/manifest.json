@@ -1,6 +1,6 @@
 {
   "name": "Searchlight",
-  "description": "Quickly search",
+  "description": "Quickly search for bookmarks and tabs in Chrome",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
@@ -25,7 +25,7 @@
   "commands": {
     "_execute_action": {
       "suggested_key": {
-        "windows": "Ctrl+E",
+        "windows": "Ctrl+M",
         "mac": "Command+E"
       }
     }

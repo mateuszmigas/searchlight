@@ -1,4 +1,5 @@
 import fuzzysort from "fuzzysort";
+import { SearchItem } from "./common";
 
 const getAllTabs = async (): Promise<Omit<SearchItem, "data">[]> => {
   const tabs = await chrome.tabs.query({});
@@ -40,21 +41,6 @@ const getAllBookmarks = async (): Promise<Omit<SearchItem, "data">[]> => {
     }));
 };
 
-export type SearchItem =
-  | {
-      id: number;
-      type: "TAB";
-      display: string;
-      data: Fuzzysort.Prepared;
-    }
-  | {
-      id: string;
-      type: "BOOKMARK";
-      display: string;
-      url: string;
-      data: Fuzzysort.Prepared;
-    };
-
 export const getAllSearchItems = async (): Promise<SearchItem[]> => {
   const tabs = await getAllTabs();
   const bookmarks = await getAllBookmarks();
@@ -62,8 +48,3 @@ export const getAllSearchItems = async (): Promise<SearchItem[]> => {
     .concat(bookmarks)
     .map((i) => ({ ...i, data: fuzzysort.prepare(i.display) } as SearchItem));
 };
-
-export const navigateToSearchItem = (item: SearchItem) =>
-  item.type === "BOOKMARK"
-    ? chrome.tabs.create({ url: item.url })
-    : chrome.tabs.update(Number(item.id), { active: true });

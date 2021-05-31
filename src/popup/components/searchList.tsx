@@ -1,7 +1,7 @@
 import React from "react";
 import { FixedSizeList } from "react-window";
-import { SearchResult } from "../query";
-import { navigateToSearchItem } from "../searchItem";
+import { SearchItemResult } from "../common";
+import { navigateToSearchItem } from "../utils";
 
 const useScrollListToIndex = (
   elementRef: React.RefObject<FixedSizeList>,
@@ -19,7 +19,7 @@ const memoizedRow = React.memo(function ListRow(props: {
   index: number;
   style: React.CSSProperties;
   data: {
-    searchItems: SearchResult[];
+    searchItems: SearchItemResult[];
     selectedIndex: number;
   };
 }) {
@@ -47,7 +47,7 @@ const memoizedRow = React.memo(function ListRow(props: {
 });
 
 export function SearchList(props: {
-  searchItems: SearchResult[];
+  searchItems: SearchItemResult[];
   selectedIndex: number;
 }) {
   const { searchItems, selectedIndex } = props;

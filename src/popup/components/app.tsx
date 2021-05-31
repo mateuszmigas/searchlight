@@ -1,9 +1,11 @@
 import * as React from "react";
-import { ExtensionState, setExtensionState } from "../state";
-import { navigateToSearchItem, SearchItem } from "../searchItem";
+import { ExtensionState, setExtensionState } from "../extensionState";
 import { SearchList } from "./searchList";
-import { applyQuery } from "../query";
+import { filter } from "../fuzzyFilter";
 import { NoResults } from "./noResults";
+import { translations } from "../translations";
+import { SearchItem } from "../common";
+import { navigateToSearchItem } from "../utils";
 
 export function App(props: {
   initialState: ExtensionState;
@@ -21,7 +23,7 @@ export function App(props: {
     [selectedIndex, queryText]
   );
 
-  const filteredSearchItems = applyQuery(searchItems, queryText);
+  const filteredSearchItems = filter(searchItems, queryText);
 
   const listKeyboardHandler = React.useCallback(
     (e: React.KeyboardEvent<Element>) => {
@@ -57,7 +59,7 @@ export function App(props: {
       <input
         className="popup-search-input"
         autoFocus
-        placeholder={"Search tabs and bookmarks"}
+        placeholder={translations.searchInputPlaceholder}
         onFocus={(e) => e.target.select()}
         value={queryText}
         onChange={(e) => {

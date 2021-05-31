@@ -21111,50 +21111,13 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   // src/popup/components/app.tsx
   var React3 = __toModule(require_react());
 
-  // src/popup/state.ts
+  // src/popup/extensionState.ts
   var defaultState = {
     queryText: "",
     selectedIndex: 0
   };
   var getExtensionState = () => new Promise((res) => chrome.storage.sync.get("state", ({ state }) => res(__spreadValues(__spreadValues({}, defaultState), state))));
   var setExtensionState = (state) => chrome.storage.sync.set({ state });
-
-  // src/popup/searchItem.ts
-  var import_fuzzysort = __toModule(require_fuzzysort());
-  var getAllTabs = () => __async(void 0, null, function* () {
-    const tabs = yield chrome.tabs.query({});
-    return tabs.filter((t) => !!t.title && !!t.id && !t.active).map((t) => ({
-      type: "TAB",
-      id: t.id,
-      display: t.title
-    }));
-  });
-  var getAllBookmarks = () => __async(void 0, null, function* () {
-    var _a;
-    const flattenBookmakrs = (data) => {
-      const result = [];
-      for (const item of data) {
-        result.push(item);
-        if (item.children) {
-          result.push(...flattenBookmakrs(item.children));
-        }
-      }
-      return result;
-    };
-    const bookmarks = yield (_a = chrome.bookmarks) == null ? void 0 : _a.getTree();
-    return flattenBookmakrs(bookmarks).filter((b) => !!b.url).map((b) => ({
-      type: "BOOKMARK",
-      id: b.id,
-      display: b.title,
-      url: b.url
-    }));
-  });
-  var getAllSearchItems = () => __async(void 0, null, function* () {
-    const tabs = yield getAllTabs();
-    const bookmarks = yield getAllBookmarks();
-    return tabs.concat(bookmarks).map((i) => __spreadProps(__spreadValues({}, i), { data: import_fuzzysort.default.prepare(i.display) }));
-  });
-  var navigateToSearchItem = (item) => item.type === "BOOKMARK" ? chrome.tabs.create({ url: item.url }) : chrome.tabs.update(Number(item.id), { active: true });
 
   // src/popup/components/searchList.tsx
   var import_react2 = __toModule(require_react());
@@ -21728,6 +21691,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
   });
 
+  // src/popup/utils.ts
+  var navigateToSearchItem = (item) => item.type === "BOOKMARK" ? chrome.tabs.create({ url: item.url }) : chrome.tabs.update(Number(item.id), { active: true });
+
   // src/popup/components/searchList.tsx
   var useScrollListToIndex = (elementRef, index) => {
     import_react2.default.useEffect(() => {
@@ -21775,23 +21741,40 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, memoizedRow);
   }
 
-  // src/popup/query.ts
-  var import_fuzzysort2 = __toModule(require_fuzzysort());
-  var applyQuery = (items, query) => {
-    const lowerCaseQuery = query.toLocaleLowerCase().trim();
-    const results = import_fuzzysort2.default.go(lowerCaseQuery, items, { key: "data" });
+  // src/popup/fuzzyFilter.ts
+  var import_fuzzysort = __toModule(require_fuzzysort());
+  var fuzzyFilter = (query, items) => {
+    const results = import_fuzzysort.default.go(query, items, { key: "data" });
     return results.map((r) => ({
       item: r.obj,
-      displayHighlight: import_fuzzysort2.default.highlight(r, "<b>", "</b>")
+      displayHighlight: import_fuzzysort.default.highlight(r, "<b>", "</b>")
     }));
+  };
+  var filter = (items, query) => {
+    const lowerCaseQuery = query.toLocaleLowerCase();
+    if (lowerCaseQuery.substring(0, 2) == "b:") {
+      return fuzzyFilter(lowerCaseQuery.substring(2), items.filter((i) => i.type === "BOOKMARK"));
+    } else if (lowerCaseQuery.substring(0, 2) == "t:") {
+      return fuzzyFilter(lowerCaseQuery.substring(2), items.filter((i) => i.type === "TAB"));
+    } else {
+      return fuzzyFilter(lowerCaseQuery, items);
+    }
   };
 
   // src/popup/components/noResults.tsx
   var React2 = __toModule(require_react());
+
+  // src/popup/translations.ts
+  var translations = {
+    searchInputPlaceholder: "Search tabs and bookmarks",
+    noResultsMessage: "No results found"
+  };
+
+  // src/popup/components/noResults.tsx
   function NoResults() {
     return /* @__PURE__ */ React2.createElement("div", {
       className: "popup-search-no-results"
-    }, "No results found");
+    }, translations.noResultsMessage);
   }
 
   // src/popup/components/app.tsx
@@ -21800,7 +21783,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     const [selectedIndex, setSelectedIndex] = React3.useState(initialState.selectedIndex);
     const [queryText, setQueryText] = React3.useState(initialState.queryText);
     React3.useEffect(() => setExtensionState({ selectedIndex, queryText }), [selectedIndex, queryText]);
-    const filteredSearchItems = applyQuery(searchItems, queryText);
+    const filteredSearchItems = filter(searchItems, queryText);
     const listKeyboardHandler = React3.useCallback((e) => {
       const clamp = (index) => {
         return Math.max(Math.min(index, filteredSearchItems.length - 1), 0);
@@ -21832,7 +21815,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, /* @__PURE__ */ React3.createElement("input", {
       className: "popup-search-input",
       autoFocus: true,
-      placeholder: "Search tabs and bookmarks",
+      placeholder: translations.searchInputPlaceholder,
       onFocus: (e) => e.target.select(),
       value: queryText,
       onChange: (e) => {
@@ -21844,6 +21827,42 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       selectedIndex
     }) : /* @__PURE__ */ React3.createElement(NoResults, null));
   }
+
+  // src/popup/itemsSource.ts
+  var import_fuzzysort2 = __toModule(require_fuzzysort());
+  var getAllTabs = () => __async(void 0, null, function* () {
+    const tabs = yield chrome.tabs.query({});
+    return tabs.filter((t) => !!t.title && !!t.id && !t.active).map((t) => ({
+      type: "TAB",
+      id: t.id,
+      display: t.title
+    }));
+  });
+  var getAllBookmarks = () => __async(void 0, null, function* () {
+    var _a;
+    const flattenBookmakrs = (data) => {
+      const result = [];
+      for (const item of data) {
+        result.push(item);
+        if (item.children) {
+          result.push(...flattenBookmakrs(item.children));
+        }
+      }
+      return result;
+    };
+    const bookmarks = yield (_a = chrome.bookmarks) == null ? void 0 : _a.getTree();
+    return flattenBookmakrs(bookmarks).filter((b) => !!b.url).map((b) => ({
+      type: "BOOKMARK",
+      id: b.id,
+      display: b.title,
+      url: b.url
+    }));
+  });
+  var getAllSearchItems = () => __async(void 0, null, function* () {
+    const tabs = yield getAllTabs();
+    const bookmarks = yield getAllBookmarks();
+    return tabs.concat(bookmarks).map((i) => __spreadProps(__spreadValues({}, i), { data: import_fuzzysort2.default.prepare(i.display) }));
+  });
 
   // src/popup/index.tsx
   var run = () => __async(void 0, null, function* () {
