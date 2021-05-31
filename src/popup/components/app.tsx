@@ -23,31 +23,34 @@ export function App(props: {
 
   const filteredSearchItems = applyQuery(searchItems, queryText);
 
-  const listKeyboardHandler = (e: React.KeyboardEvent<Element>) => {
-    const clamp = (index: number) => {
-      return Math.max(Math.min(index, filteredSearchItems.length - 1), 0);
-    };
+  const listKeyboardHandler = React.useCallback(
+    (e: React.KeyboardEvent<Element>) => {
+      const clamp = (index: number) => {
+        return Math.max(Math.min(index, filteredSearchItems.length - 1), 0);
+      };
 
-    switch (e.key) {
-      case "Enter":
-        e.preventDefault();
-        const item = filteredSearchItems[selectedIndex];
-        navigateToSearchItem(item);
-        break;
-      case "Down":
-      case "ArrowDown":
-        e.preventDefault();
-        setSelectedIndex((index) => clamp(index + 1));
-        break;
-      case "Up":
-      case "ArrowUp":
-        e.preventDefault();
-        setSelectedIndex((index) => clamp(index - 1));
-        break;
-      default:
-        return;
-    }
-  };
+      switch (e.key) {
+        case "Enter":
+          e.preventDefault();
+          const item = filteredSearchItems[selectedIndex];
+          navigateToSearchItem(item);
+          break;
+        case "Down":
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((index) => clamp(index + 1));
+          break;
+        case "Up":
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((index) => clamp(index - 1));
+          break;
+        default:
+          return;
+      }
+    },
+    [filteredSearchItems, selectedIndex]
+  );
 
   return (
     <div className="popup-main" onKeyDown={listKeyboardHandler} tabIndex={0}>
