@@ -1,4 +1,6 @@
-const getAllTabs = async (): Promise<SearchItem[]> => {
+import fuzzysort from "fuzzysort";
+
+const getAllTabs = async (): Promise<Omit<SearchItem, "data">[]> => {
   const tabs = await chrome.tabs.query({});
 
   return tabs
@@ -7,11 +9,10 @@ const getAllTabs = async (): Promise<SearchItem[]> => {
       type: "TAB",
       id: t.id!,
       display: t.title!,
-      data: t.title!.toLocaleLowerCase(),
     }));
 };
 
-const getAllBookmarks = async (): Promise<SearchItem[]> => {
+const getAllBookmarks = async (): Promise<Omit<SearchItem, "data">[]> => {
   const flattenBookmakrs = (
     data: chrome.bookmarks.BookmarkTreeNode[]
   ): chrome.bookmarks.BookmarkTreeNode[] => {
@@ -35,7 +36,6 @@ const getAllBookmarks = async (): Promise<SearchItem[]> => {
       type: "BOOKMARK",
       id: b.id,
       display: b.title,
-      data: b.title.toLocaleLowerCase(),
       url: b.url!,
     }));
 };
@@ -45,14 +45,14 @@ export type SearchItem =
       id: number;
       type: "TAB";
       display: string;
-      data: string;
+      data: Fuzzysort.Prepared;
     }
   | {
       id: string;
       type: "BOOKMARK";
       display: string;
       url: string;
-      data: string;
+      data: Fuzzysort.Prepared;
     };
 
 export const getAllSearchItems = async (): Promise<SearchItem[]> => {
@@ -60,7 +60,7 @@ export const getAllSearchItems = async (): Promise<SearchItem[]> => {
   const bookmarks = await getAllBookmarks();
   return tabs
     .concat(bookmarks)
-    .sort((a, b) => a.display.localeCompare(b.display));
+    .map((i) => ({ ...i, data: fuzzysort.prepare(i.display) } as SearchItem));
 };
 
 export const navigateToSearchItem = (item: SearchItem) =>

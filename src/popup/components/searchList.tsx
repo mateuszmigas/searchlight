@@ -1,6 +1,7 @@
 import React from "react";
 import { FixedSizeList } from "react-window";
-import { navigateToSearchItem, SearchItem } from "../searchItem";
+import { SearchResult } from "../query";
+import { navigateToSearchItem } from "../searchItem";
 
 const useScrollListToIndex = (
   elementRef: React.RefObject<FixedSizeList>,
@@ -18,7 +19,7 @@ const memoizedRow = React.memo(function ListRow(props: {
   index: number;
   style: React.CSSProperties;
   data: {
-    searchItems: SearchItem[];
+    searchItems: SearchResult[];
     selectedIndex: number;
   };
 }) {
@@ -36,18 +37,17 @@ const memoizedRow = React.memo(function ListRow(props: {
         className={`popup-search-list-item ${
           index === selectedIndex ? "popup-search-list-item-selected" : ""
         } popup-search-list-item-${
-          searchItem.type === "BOOKMARK" ? "bookmark" : "tab"
+          searchItem.item.type === "BOOKMARK" ? "bookmark" : "tab"
         }`}
-        onClick={() => navigateToSearchItem(searchItem)}
-      >
-        {searchItem.display}
-      </div>
+        onClick={() => navigateToSearchItem(searchItem.item)}
+        dangerouslySetInnerHTML={{ __html: searchItem.displayHighlight }}
+      ></div>
     </div>
   );
 });
 
 export function SearchList(props: {
-  searchItems: SearchItem[];
+  searchItems: SearchResult[];
   selectedIndex: number;
 }) {
   const { searchItems, selectedIndex } = props;

@@ -2,6 +2,11 @@ body {
   width: 400px;
   margin: 0px;
   background: #202124;
+  font-size: 14px;
+}
+
+b {
+  color: white;
 }
 
 .popup-main {
@@ -11,7 +16,7 @@ body {
 }
 
 .popup-search-input {
-  color: white;
+  color: #d9d9d9;
   background: #202124;
   height: 30px;
   border: 0px;
@@ -35,7 +40,8 @@ input:focus {
 }
 
 .popup-search-list-item {
-  color: white;
+  font-size: 14px;
+  color: #d9d9d9;
   position: relative;
   display: block;
   height: 30px;
@@ -53,11 +59,11 @@ input:focus {
 }
 
 .popup-search-list-item-tab {
-  border-left: 3px solid #639fab;
+  border-left: 3px solid #284b63;
 }
 
 .popup-search-list-item-bookmark {
-  border-left: 3px solid #1c5d99;
+  border-left: 3px solid #3c6e71;
 }
 
 .popup-search-list-item-selected {

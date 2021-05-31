@@ -33,7 +33,7 @@ export function App(props: {
         case "Enter":
           e.preventDefault();
           const item = filteredSearchItems[selectedIndex];
-          navigateToSearchItem(item);
+          navigateToSearchItem(item.item);
           break;
         case "Down":
         case "ArrowDown":
