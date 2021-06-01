@@ -53,6 +53,10 @@ input:focus {
   color: var(--foreground-creamy);
 }
 
+.popup-search-list {
+  overflow: overlay !important;
+}
+
 .popup-search-list-item {
   font-size: var(--font-size);
   color: var(--foreground-creamy);
