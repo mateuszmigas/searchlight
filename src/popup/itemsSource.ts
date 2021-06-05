@@ -1,19 +1,24 @@
 import fuzzysort from "fuzzysort";
 import { SearchItem } from "./common";
 
-const getAllTabs = async (): Promise<Omit<SearchItem, "data">[]> => {
+const getAllTabs = async (): Promise<
+  Omit<SearchItem, "titleSearchData" | "urlSearchData">[]
+> => {
   const tabs = await chrome.tabs.query({});
 
   return tabs
-    .filter((t) => !!t.title && !!t.id && !t.active)
+    .filter((t) => !!t.title && !!t.url && !!t.id && !t.active)
     .map((t) => ({
       type: "TAB",
       id: t.id!,
-      display: t.title!,
+      title: t.title!,
+      url: t.url!,
     }));
 };
 
-const getAllBookmarks = async (): Promise<Omit<SearchItem, "data">[]> => {
+const getAllBookmarks = async (): Promise<
+  Omit<SearchItem, "titleSearchData" | "urlSearchData">[]
+> => {
   const flattenBookmakrs = (
     data: chrome.bookmarks.BookmarkTreeNode[]
   ): chrome.bookmarks.BookmarkTreeNode[] => {
@@ -36,7 +41,7 @@ const getAllBookmarks = async (): Promise<Omit<SearchItem, "data">[]> => {
     .map((b) => ({
       type: "BOOKMARK",
       id: b.id,
-      display: b.title,
+      title: b.title,
       url: b.url!,
     }));
 };
@@ -46,5 +51,12 @@ export const getAllSearchItems = async (): Promise<SearchItem[]> => {
   const bookmarks = await getAllBookmarks();
   return tabs
     .concat(bookmarks)
-    .map((i) => ({ ...i, data: fuzzysort.prepare(i.display) } as SearchItem));
+    .map(
+      (i) =>
+        ({
+          ...i,
+          titleSearchData: fuzzysort.prepare(i.title),
+          urlSearchData: fuzzysort.prepare(i.url),
+        } as SearchItem)
+    );
 };

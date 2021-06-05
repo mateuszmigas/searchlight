@@ -1,19 +1,23 @@
 export type SearchItemResult = {
   item: SearchItem;
-  displayHighlight: string;
+  titleHighlight: string;
+  urlHightlight: string;
 };
 
 export type SearchItem =
   | {
       id: number;
       type: "TAB";
-      display: string;
-      data: Fuzzysort.Prepared;
+      title: string;
+      url: string;
+      titleSearchData: Fuzzysort.Prepared;
+      urlSearchData: Fuzzysort.Prepared;
     }
   | {
       id: string;
       type: "BOOKMARK";
-      display: string;
+      title: string;
       url: string;
-      data: Fuzzysort.Prepared;
+      titleSearchData: Fuzzysort.Prepared;
+      urlSearchData: Fuzzysort.Prepared;
     };

@@ -2,12 +2,19 @@ import fuzzysort from "fuzzysort";
 import { SearchItem, SearchItemResult } from "./common";
 
 const fuzzyFilter = (query: string, items: SearchItem[]) => {
-  const results = fuzzysort.go(query, items, { key: "data" });
+  const results = fuzzysort.go(query, items, {
+    keys: ["titleSearchData", "urlSearchData"],
+  });
   return results.map(
     (r) =>
       ({
         item: r.obj,
-        displayHighlight: fuzzysort.highlight(r, "<b>", "</b>"),
+        titleHighlight: r[0]
+          ? fuzzysort.highlight(r[0], "<b>", "</b>")
+          : r.obj.title,
+        urlHightlight: r[1]
+          ? fuzzysort.highlight(r[1], "<b>", "</b>")
+          : r.obj.url,
       } as SearchItemResult)
   );
 };

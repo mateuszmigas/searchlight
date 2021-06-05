@@ -40,8 +40,20 @@ const memoizedRow = React.memo(function ListRow(props: {
           searchItem.item.type === "BOOKMARK" ? "bookmark" : "tab"
         }`}
         onClick={() => navigateToSearchItem(searchItem.item)}
-        dangerouslySetInnerHTML={{ __html: searchItem.displayHighlight }}
-      ></div>
+      >
+        <div
+          className="popup-search-list-item-title"
+          dangerouslySetInnerHTML={{
+            __html: searchItem.titleHighlight,
+          }}
+        ></div>
+        <div
+          className="popup-search-list-item-url"
+          dangerouslySetInnerHTML={{
+            __html: searchItem.urlHightlight,
+          }}
+        ></div>
+      </div>
     </div>
   );
 });
@@ -51,8 +63,8 @@ export function SearchList(props: {
   selectedIndex: number;
 }) {
   const { searchItems, selectedIndex } = props;
-  const itemHeight = 30;
-  const maxHeight = 300;
+  const itemHeight = 45;
+  const maxHeight = 8 * 45;
   const itemCount = searchItems.length;
   const height = Math.min(itemCount * itemHeight, maxHeight);
   const itemData = React.useMemo(

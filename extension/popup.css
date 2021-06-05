@@ -8,9 +8,10 @@
   --foreground-white: #ffffff;
   --foreground-creamy: #d9d9d9;
   --font-size: 14px;
+  --font-size-url: 9px;
   --popup-width: 400px;
   --item-width: 377px;
-  --item-height: 30px;
+  --item-height: 45px;
   --padding: 10px;
   --padding-with-border: 13px;
 }
@@ -58,13 +59,26 @@ input:focus {
 }
 
 .popup-search-list-item {
-  font-size: var(--font-size);
   color: var(--foreground-creamy);
   height: var(--item-height);
   width: var(--item-width);
-  line-height: var(--item-height);
+  display: flex;
+  flex-direction: column;
   padding-left: var(--padding);
   padding-right: var(--padding);
+}
+
+.popup-search-list-item-title {
+  line-height: 27px;
+  font-size: var(--font-size);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.popup-search-list-item-url {
+  line-height: 10px;
+  font-size: var(--font-size-url);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
