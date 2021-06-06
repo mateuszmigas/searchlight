@@ -5,14 +5,6 @@ const configs = [
   {
     entryPoint: 'src/popup/index.tsx',
     outfile: 'extension/popup.js'
-  },
-  {
-    entryPoint: 'src/background/index.ts',
-    outfile: 'extension/background.js'
-  },
-  {
-    entryPoint: 'src/options/index.ts',
-    outfile: 'extension/options.js'
   }
 ];
 
