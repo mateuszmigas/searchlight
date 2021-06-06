@@ -1,3 +1,5 @@
+import { debounce } from "./utils";
+
 export type ExtensionState = {
   queryText: string;
   selectedIndex: number;
@@ -15,5 +17,7 @@ export const getExtensionState = () =>
     )
   );
 
-export const setExtensionState = (state: ExtensionState) =>
-  chrome.storage.sync.set({ state });
+export const setExtensionState = debounce(
+  (state: ExtensionState) => chrome.storage.sync.set({ state }),
+  100
+);

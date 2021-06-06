@@ -80,7 +80,7 @@ export function SearchList(props: {
 
   return (
     <FixedSizeList
-      className="popup-search-list"
+      className="popup-search-list customized-scrollbar"
       ref={listRef}
       height={height}
       itemCount={itemCount}
