@@ -3,6 +3,11 @@
 Chrome extension for quick bookmark/tab navigation
 
 # Installation
+
+## Store
+https://chrome.google.com/webstore/detail/searchlight/dofkpheepknkbdhokaohjhmbbnkfhkmk/
+
+## Manual
 1. Pull the repository
 2. Run 'yarn' and 'yarn build:prod'
 3. Open chrome and go to 'chrome://extensions/'
